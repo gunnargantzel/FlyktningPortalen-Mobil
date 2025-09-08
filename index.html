@@ -13,21 +13,22 @@
     <!-- Styles -->
     <link rel="stylesheet" href="styles.css">
     
-    <!-- MSAL Library - Force use of real MSAL for Entra ID authentication -->
-    <script src="https://alcdn.msauth.net/browser/2.38.4/js/msal-browser.min.js" 
-            integrity="sha384-..." 
-            crossorigin="anonymous"
-            onerror="console.error('Failed to load real MSAL, trying alternative...'); 
-                     var script = document.createElement('script');
-                     script.src = 'https://unpkg.com/@azure/msal-browser@latest/dist/msal-browser.min.js';
-                     script.onload = function() { console.log('✅ Real MSAL loaded from unpkg'); };
-                     script.onerror = function() { 
-                         console.error('All real MSAL sources failed, loading local implementation');
-                         var localScript = document.createElement('script');
-                         localScript.src = 'lib/msal-browser.min.js';
-                         document.head.appendChild(localScript);
-                     };
-                     document.head.appendChild(script);"></script>
+        <!-- MSAL Library - Use local real MSAL for Entra ID authentication -->
+        <script type="module">
+            // Load the real MSAL library as ES module
+            import { PublicClientApplication } from './lib/msal-browser-real.min.js';
+            window.msal = { PublicClientApplication };
+            console.log('✅ Real MSAL loaded from local file');
+        </script>
+        <!-- Fallback to local mock if ES module fails -->
+    <script>
+            if (!window.msal) {
+                console.log('ES module failed, loading local mock MSAL');
+                var script = document.createElement('script');
+                script.src = 'lib/msal-browser.min.js';
+                document.head.appendChild(script);
+            }
+    </script>
 </head>
 <body>
     <!-- Loading Screen -->
@@ -145,17 +146,15 @@
             async initializeMSAL() {
                 console.log('🔐 Initializing MSAL...');
                 
-                if (typeof msal === 'undefined') {
-                    console.log('MSAL not available, using mock authentication');
+                // Wait a bit for the ES module to load
+                await new Promise(resolve => setTimeout(resolve, 100));
+                
+                if (typeof window.msal === 'undefined' || !window.msal.PublicClientApplication) {
+                    console.log('⚠️ Real MSAL not available, using mock authentication');
                     return;
                 }
                 
-                // Check if we have real MSAL or local implementation
-                if (msal.PublicClientApplication && msal.PublicClientApplication.prototype.loginPopup) {
-                    console.log('✅ Real Microsoft MSAL detected');
-                } else {
-                    console.log('⚠️ Local MSAL implementation detected, limited functionality');
-                }
+                console.log('✅ Real Microsoft MSAL detected');
                 
                 try {
                     // Real Entra ID configuration from CONFIG
@@ -171,7 +170,7 @@
                         }
                     };
                     
-                    this.msalInstance = new msal.PublicClientApplication(msalConfig);
+                    this.msalInstance = new window.msal.PublicClientApplication(msalConfig);
                     
                     // Handle redirect promise
                     await this.msalInstance.handleRedirectPromise();
