@@ -87,6 +87,9 @@
                 // Initialize MSAL
                 await this.initializeMSAL();
                 
+                // Initialize Service Worker
+                await this.initializeServiceWorker();
+                
                 // Show login screen after 2 seconds
                 setTimeout(() => {
                     this.showScreen('login-screen');
@@ -118,6 +121,28 @@
                     console.log('✅ MSAL initialized successfully');
                 } catch (error) {
                     console.error('❌ MSAL initialization failed:', error);
+                }
+            }
+            
+            async initializeServiceWorker() {
+                console.log('🔧 Initializing Service Worker...');
+                
+                if (!('serviceWorker' in navigator)) {
+                    console.log('Service Worker not supported');
+                    return;
+                }
+                
+                if (window.serviceWorkerRegistered) {
+                    console.log('Service Worker already registered');
+                    return;
+                }
+                
+                try {
+                    const registration = await navigator.serviceWorker.register('/sw.js');
+                    console.log('✅ Service Worker registered successfully:', registration);
+                    window.serviceWorkerRegistered = true;
+                } catch (error) {
+                    console.error('❌ Service Worker registration failed:', error);
                 }
             }
             
