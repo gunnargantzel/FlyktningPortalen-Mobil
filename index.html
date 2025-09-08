@@ -82,17 +82,7 @@
     </script>
     <script src="lib/msal-browser.min.js" 
             onerror="loadMSALFallback()"></script>
-    <script>
-        // Ensure MSAL is loaded before initializing app
-        window.addEventListener('load', function() {
-            if (typeof msal === 'undefined') {
-                console.error('MSAL library failed to load');
-                document.getElementById('loading-screen').innerHTML = 
-                    '<div class="loading-spinner"></div><p>Feil ved lasting av autentiseringsbibliotek. Sjekk internettforbindelsen.</p>';
-                return;
-            }
-        });
-    </script>
+    <!-- MSAL check is now handled in the main initialization script -->
 </head>
 <body>
     <!-- Loading Screen -->
@@ -262,6 +252,14 @@
             // Wait for everything to load
             window.addEventListener('load', () => {
                 console.log('Window loaded, initializing app...');
+                
+                // Check if MSAL is loaded
+                if (typeof msal === 'undefined') {
+                    console.error('MSAL library failed to load');
+                    document.getElementById('loading-screen').innerHTML = 
+                        '<div class="loading-spinner"></div><p>Feil ved lasting av autentiseringsbibliotek. Sjekk internettforbindelsen.</p>';
+                    return;
+                }
                 
                 // Simple initialization
                 try {
