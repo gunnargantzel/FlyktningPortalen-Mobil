@@ -13,22 +13,20 @@
     <!-- Styles -->
     <link rel="stylesheet" href="styles.css">
     
-        <!-- MSAL Library - Use local real MSAL for Entra ID authentication -->
-        <script type="module">
-            // Load the real MSAL library as ES module
-            import { PublicClientApplication } from './lib/msal-browser-real.min.js';
-            window.msal = { PublicClientApplication };
-            console.log('✅ Real MSAL loaded from local file');
-        </script>
-        <!-- Fallback to local mock if ES module fails -->
-    <script>
-            if (!window.msal) {
-                console.log('ES module failed, loading local mock MSAL');
-                var script = document.createElement('script');
-                script.src = 'lib/msal-browser.min.js';
-                document.head.appendChild(script);
-            }
-    </script>
+        <!-- MSAL Library - Use real MSAL from CDN with local fallback -->
+        <script src="https://unpkg.com/@azure/msal-browser@2.38.4/lib/msal-browser.min.js"
+                onload="console.log('✅ Real MSAL loaded from CDN');"
+                onerror="console.error('CDN failed, loading local MSAL...');
+                         var script = document.createElement('script');
+                         script.src = 'lib/msal-browser-real.min.js';
+                         script.onload = function() { console.log('✅ Real MSAL loaded from local file'); };
+                script.onerror = function() {
+                             console.log('Loading mock MSAL...');
+                             var mockScript = document.createElement('script');
+                             mockScript.src = 'lib/msal-browser.min.js';
+                             document.head.appendChild(mockScript);
+                         };
+                         document.head.appendChild(script);"></script>
 </head>
 <body>
     <!-- Loading Screen -->
@@ -146,10 +144,10 @@
             async initializeMSAL() {
                 console.log('🔐 Initializing MSAL...');
                 
-                // Wait a bit for the ES module to load
+                // Wait a bit for the script to load
                 await new Promise(resolve => setTimeout(resolve, 100));
                 
-                if (typeof window.msal === 'undefined' || !window.msal.PublicClientApplication) {
+                if (typeof msal === 'undefined' || !msal.PublicClientApplication) {
                     console.log('⚠️ Real MSAL not available, using mock authentication');
                     return;
                 }
@@ -170,7 +168,7 @@
                         }
                     };
                     
-                    this.msalInstance = new window.msal.PublicClientApplication(msalConfig);
+                    this.msalInstance = new msal.PublicClientApplication(msalConfig);
                     
                     // Handle redirect promise
                     await this.msalInstance.handleRedirectPromise();
