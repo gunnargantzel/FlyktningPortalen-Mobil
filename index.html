@@ -321,6 +321,12 @@
                         console.log(`${key} version:`, window[key]?.version);
                         console.log(`${key} gitCommit:`, window[key]?.gitCommit);
                         console.log(`${key} testMethod:`, typeof window[key]?.testMethod);
+                        
+                        // If this is the main app object, check all its properties
+                        if (key === 'app' && window[key]) {
+                            console.log(`${key} all properties:`, Object.getOwnPropertyNames(window[key]));
+                            console.log(`${key} prototype:`, Object.getOwnPropertyNames(Object.getPrototypeOf(window[key])));
+                        }
                     });
                     
                     if (window.app && typeof window.app.testMethod === 'function') {
