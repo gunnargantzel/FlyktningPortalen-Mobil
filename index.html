@@ -304,7 +304,8 @@
                         console.log('initializeApp method:', window.app.initializeApp);
                         try {
                             console.log('About to call initializeApp...');
-                            const result = await window.app.initializeApp();
+                            console.log('this context before call:', window.app);
+                            const result = await window.app.initializeApp.call(window.app);
                             console.log('Manual initialization completed successfully:', result);
                         } catch (error) {
                             console.error('Manual initialization failed:', error);

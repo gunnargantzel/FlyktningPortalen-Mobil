@@ -23,6 +23,7 @@ class FraværApp {
         console.log('🚀 initializeApp method called!');
         console.log('📱 App Version:', this.version);
         console.log('🔧 Git Commit:', this.gitCommit);
+        console.log('🔍 this object:', this);
         
         try {
             console.log('=== STARTING APP INITIALIZATION ===');
