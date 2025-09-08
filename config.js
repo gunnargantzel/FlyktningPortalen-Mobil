@@ -3,7 +3,7 @@
 const CONFIG = {
     // Entra ID Configuration
     auth: {
-        clientId: 'YOUR_CLIENT_ID', // Replace with your Entra ID app client ID
+        clientId: 'c25b351f-417b-46cf-b736-2970d45273fc', // Entra ID app client ID
         authority: 'https://login.microsoftonline.com/fb7e0b12-d8fc-4f14-bd1a-ad9c8667a7e6',
         redirectUri: window.location.origin,
         postLogoutRedirectUri: window.location.origin,
