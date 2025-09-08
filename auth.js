@@ -9,12 +9,17 @@ class AuthManager {
 
     async initialize() {
         try {
+            console.log('AuthManager: Starting initialization...');
+            
             // Check if MSAL is available
             if (typeof msal === 'undefined') {
+                console.error('MSAL library not loaded');
                 throw new Error('MSAL library not loaded');
             }
+            console.log('MSAL library is available');
             
             // Initialize MSAL instance
+            console.log('Creating MSAL instance...');
             this.msalInstance = new msal.PublicClientApplication({
                 auth: CONFIG.auth,
                 cache: {
@@ -32,18 +37,24 @@ class AuthManager {
                     }
                 }
             });
+            console.log('MSAL instance created');
 
             // Handle redirect promise
+            console.log('Handling redirect promise...');
             await this.msalInstance.handleRedirectPromise();
+            console.log('Redirect promise handled');
             
             // Check if user is already logged in
+            console.log('Checking for existing accounts...');
             const accounts = this.msalInstance.getAllAccounts();
+            console.log('Found accounts:', accounts.length);
             if (accounts.length > 0) {
                 this.currentUser = accounts[0];
                 console.log('User already logged in:', this.currentUser.username);
             }
 
             this.isInitialized = true;
+            console.log('AuthManager initialization completed');
             return true;
         } catch (error) {
             console.error('Failed to initialize MSAL:', error);

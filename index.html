@@ -249,5 +249,44 @@
     <script src="auth.js"></script>
     <script src="dataverse.js"></script>
     <script src="app.js"></script>
+    
+    <!-- Debug Script -->
+    <script>
+        console.log('=== DEBUG SCRIPT LOADED ===');
+        console.log('CONFIG:', typeof CONFIG !== 'undefined' ? 'Available' : 'NOT AVAILABLE');
+        console.log('authManager:', typeof authManager !== 'undefined' ? 'Available' : 'NOT AVAILABLE');
+        console.log('dataverseManager:', typeof dataverseManager !== 'undefined' ? 'Available' : 'NOT AVAILABLE');
+        console.log('msal:', typeof msal !== 'undefined' ? 'Available' : 'NOT AVAILABLE');
+        
+        // Test if we can create the app
+        setTimeout(() => {
+            console.log('=== TESTING APP CREATION ===');
+            try {
+                if (typeof FraværApp !== 'undefined') {
+                    console.log('FraværApp class is available');
+                    const testApp = new FraværApp();
+                    console.log('App created successfully:', testApp);
+                } else {
+                    console.error('FraværApp class is NOT available');
+                }
+            } catch (error) {
+                console.error('Error creating app:', error);
+            }
+        }, 2000);
+        
+        // Fallback: Show login screen if app doesn't initialize after 5 seconds
+        setTimeout(() => {
+            const loadingScreen = document.getElementById('loading-screen');
+            const loginScreen = document.getElementById('login-screen');
+            
+            if (loadingScreen && !loadingScreen.classList.contains('hidden')) {
+                console.log('=== FALLBACK: Showing login screen ===');
+                loadingScreen.classList.add('hidden');
+                if (loginScreen) {
+                    loginScreen.classList.remove('hidden');
+                }
+            }
+        }, 5000);
+    </script>
 </body>
 </html>

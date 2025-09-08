@@ -12,31 +12,43 @@ class FraværApp {
 
     async initializeApp() {
         try {
+            console.log('Starting app initialization...');
+            
             // Show loading screen
             this.showScreen('loading-screen');
+            console.log('Loading screen shown');
             
             // Initialize authentication
+            console.log('Initializing authentication...');
             await authManager.initialize();
+            console.log('Authentication initialized');
             
             // Check if user is already authenticated
             if (authManager.isAuthenticated()) {
+                console.log('User is authenticated, handling authenticated user...');
                 await this.handleAuthenticatedUser();
             } else {
+                console.log('User not authenticated, showing login screen...');
                 this.showScreen('login-screen');
             }
             
             // Set up event listeners
+            console.log('Setting up event listeners...');
             this.setupEventListeners();
             
             // Set up offline handling
+            console.log('Setting up offline handling...');
             this.setupOfflineHandling();
             
             // Set up service worker
+            console.log('Setting up service worker...');
             this.setupServiceWorker();
+            
+            console.log('App initialization completed successfully');
             
         } catch (error) {
             console.error('Failed to initialize app:', error);
-            this.showError('Feil ved oppstart av appen');
+            this.showError('Feil ved oppstart av appen: ' + error.message);
             this.showScreen('login-screen');
         }
     }
@@ -469,11 +481,19 @@ window.showNotification = function(message, type = 'info') {
 
 // Initialize app when DOM is loaded and MSAL is ready
 document.addEventListener('DOMContentLoaded', () => {
+    console.log('DOM Content Loaded');
+    console.log('CONFIG available:', typeof CONFIG !== 'undefined');
+    console.log('authManager available:', typeof authManager !== 'undefined');
+    console.log('dataverseManager available:', typeof dataverseManager !== 'undefined');
+    
     // Wait for MSAL to be available
     const initApp = () => {
+        console.log('Checking for MSAL availability...');
         if (typeof msal !== 'undefined') {
+            console.log('MSAL is available, initializing app...');
             window.app = new FraværApp();
         } else {
+            console.log('MSAL not available, retrying in 100ms...');
             // Retry after a short delay
             setTimeout(initApp, 100);
         }
