@@ -13,12 +13,46 @@
     <!-- Styles -->
     <link rel="stylesheet" href="styles.css">
     
-    <!-- MSAL Library - Real Microsoft MSAL -->
-    <script src="https://alcdn.msauth.net/browser/2.38.3/js/msal-browser.min.js" 
-            onerror="console.error('Failed to load real MSAL, falling back to local implementation'); 
-                     var script = document.createElement('script'); 
-                     script.src = 'lib/msal-browser.min.js'; 
-                     document.head.appendChild(script);"></script>
+    <!-- MSAL Library - Try real MSAL first, fallback to local -->
+    <script>
+        // Try to load real MSAL from multiple CDNs
+        const msalCDNs = [
+            'https://alcdn.msauth.net/browser/2.38.3/js/msal-browser.min.js',
+            'https://unpkg.com/@azure/msal-browser@2.38.3/dist/msal-browser.min.js',
+            'https://cdn.jsdelivr.net/npm/@azure/msal-browser@2.38.3/dist/msal-browser.min.js'
+        ];
+        
+        let currentCDN = 0;
+        
+        function tryLoadMSAL() {
+            if (currentCDN >= msalCDNs.length) {
+                console.log('All MSAL CDNs failed, using local implementation');
+                loadLocalMSAL();
+                return;
+            }
+            
+            const script = document.createElement('script');
+            script.src = msalCDNs[currentCDN];
+            script.onload = function() {
+                console.log('✅ Real MSAL loaded from CDN:', msalCDNs[currentCDN]);
+            };
+            script.onerror = function() {
+                console.log('❌ Failed to load MSAL from:', msalCDNs[currentCDN]);
+                currentCDN++;
+                tryLoadMSAL();
+            };
+            document.head.appendChild(script);
+        }
+        
+        function loadLocalMSAL() {
+            const script = document.createElement('script');
+            script.src = 'lib/msal-browser.min.js';
+            document.head.appendChild(script);
+        }
+        
+        // Start loading MSAL
+        tryLoadMSAL();
+    </script>
 </head>
 <body>
     <!-- Loading Screen -->
