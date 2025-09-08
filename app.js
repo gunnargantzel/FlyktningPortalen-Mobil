@@ -7,7 +7,8 @@ class FraværApp {
         this.isOnline = navigator.onLine;
         this.offlineQueue = [];
         
-        this.initializeApp();
+        // Don't call initializeApp in constructor - it will be called manually
+        console.log('FraværApp constructor completed');
     }
 
     async initializeApp() {

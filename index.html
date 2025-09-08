@@ -277,11 +277,16 @@
         // Initialize app directly since DOM events might not work
         setTimeout(() => {
             console.log('=== DIRECT APP INITIALIZATION ===');
+            console.log('window.app exists:', !!window.app);
             try {
-                if (typeof FraværApp !== 'undefined' && !window.app) {
-                    console.log('Creating app directly...');
-                    window.app = new FraværApp();
-                    console.log('App created directly:', window.app);
+                if (typeof FraværApp !== 'undefined') {
+                    if (!window.app) {
+                        console.log('Creating app directly...');
+                        window.app = new FraværApp();
+                        console.log('App created directly:', window.app);
+                    } else {
+                        console.log('App already exists, using existing app');
+                    }
                     
                     // Try to manually call initializeApp if it exists
                     if (window.app && typeof window.app.initializeApp === 'function') {
@@ -291,10 +296,14 @@
                         }).catch((error) => {
                             console.error('Manual initialization failed:', error);
                         });
+                    } else {
+                        console.log('initializeApp method not available');
                     }
+                } else {
+                    console.log('FraværApp class not available');
                 }
             } catch (error) {
-                console.error('Error creating app directly:', error);
+                console.error('Error in direct initialization:', error);
             }
         }, 1000);
         
