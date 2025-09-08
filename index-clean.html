@@ -43,7 +43,10 @@
     <div id="main-screen" class="screen hidden">
         <div class="screen-header">
             <h1>Fravær Registrering</h1>
-            <button id="logout-btn" class="btn-logout">Logg ut</button>
+            <div class="user-info">
+                <span id="user-name">Bruker</span>
+                <button id="logout-btn" class="btn-logout">Logg ut</button>
+            </div>
         </div>
         <div class="screen-content">
             <div class="menu-cards">
@@ -135,17 +138,28 @@
                 }
                 
                 try {
+                    // Real Entra ID configuration
                     const msalConfig = {
                         auth: {
-                            clientId: 'mock-client-id',
-                            authority: 'https://login.microsoftonline.com/mock-tenant'
+                            clientId: 'YOUR_CLIENT_ID_HERE', // Replace with your actual client ID
+                            authority: 'https://login.microsoftonline.com/YOUR_TENANT_ID_HERE', // Replace with your tenant ID
+                            redirectUri: window.location.origin + '/index-clean.html'
+                        },
+                        cache: {
+                            cacheLocation: 'localStorage',
+                            storeAuthStateInCookie: false
                         }
                     };
                     
                     this.msalInstance = new msal.PublicClientApplication(msalConfig);
-                    console.log('✅ MSAL initialized successfully');
+                    
+                    // Handle redirect promise
+                    await this.msalInstance.handleRedirectPromise();
+                    
+                    console.log('✅ MSAL initialized successfully with Entra ID');
                 } catch (error) {
                     console.error('❌ MSAL initialization failed:', error);
+                    console.log('Falling back to mock authentication');
                 }
             }
             
@@ -252,13 +266,39 @@
                 
                 if (this.msalInstance) {
                     try {
-                        console.log('Using MSAL for authentication...');
-                        // Mock login for now
-                        this.currentUser = { name: 'Test User', email: 'test@example.com' };
-                        console.log('✅ Mock login successful');
+                        console.log('Using MSAL for Entra ID authentication...');
+                        
+                        // Check if user is already logged in
+                        const accounts = this.msalInstance.getAllAccounts();
+                        if (accounts.length > 0) {
+                            console.log('User already logged in:', accounts[0]);
+                            this.currentUser = {
+                                name: accounts[0].name,
+                                email: accounts[0].username,
+                                account: accounts[0]
+                            };
+                            this.showScreen('main-screen');
+                            return;
+                        }
+                        
+                        // Login with popup
+                        const loginRequest = {
+                            scopes: ['User.Read'],
+                            prompt: 'select_account'
+                        };
+                        
+                        const response = await this.msalInstance.loginPopup(loginRequest);
+                        console.log('✅ Entra ID login successful:', response);
+                        
+                        this.currentUser = {
+                            name: response.account.name,
+                            email: response.account.username,
+                            account: response.account
+                        };
+                        
                     } catch (error) {
-                        console.error('❌ MSAL login failed:', error);
-                        // Fallback to mock login
+                        console.error('❌ Entra ID login failed:', error);
+                        console.log('Falling back to mock authentication');
                         this.currentUser = { name: 'Test User', email: 'test@example.com' };
                     }
                 } else {
@@ -267,12 +307,34 @@
                 }
                 
                 this.showScreen('main-screen');
+                this.updateUserInfo();
             }
             
-            handleLogout() {
+            async handleLogout() {
                 console.log('🚪 Handling logout...');
+                
+                if (this.msalInstance && this.currentUser && this.currentUser.account) {
+                    try {
+                        console.log('Logging out from Entra ID...');
+                        await this.msalInstance.logoutPopup();
+                        console.log('✅ Entra ID logout successful');
+                    } catch (error) {
+                        console.error('❌ Entra ID logout failed:', error);
+                    }
+                }
+                
                 this.currentUser = null;
                 this.showScreen('login-screen');
+            }
+            
+            updateUserInfo() {
+                console.log('👤 Updating user info...');
+                
+                const userNameElement = document.getElementById('user-name');
+                if (userNameElement && this.currentUser) {
+                    userNameElement.textContent = this.currentUser.name || this.currentUser.email || 'Bruker';
+                    console.log('✅ User info updated:', this.currentUser.name);
+                }
             }
             
             async testDataverseConnection() {
