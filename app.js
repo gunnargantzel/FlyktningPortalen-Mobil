@@ -8,6 +8,7 @@ class FraværApp {
         this.userData = null;
         this.isOnline = navigator.onLine;
         this.offlineQueue = [];
+        this.initialized = false;
         
         // Version information
         this.version = '1.0.0-debug';
@@ -29,6 +30,12 @@ class FraværApp {
         console.log('🚀 initializeApp method called!');
         console.log('This object:', this);
         console.log('This version:', this.version);
+        
+        // Prevent multiple initializations
+        if (this.initialized) {
+            console.log('App already initialized, skipping...');
+            return { success: true, version: this.version, gitCommit: this.gitCommit, alreadyInitialized: true };
+        }
         
         try {
             console.log('Starting app initialization...');
@@ -70,6 +77,7 @@ class FraværApp {
             console.log('✓ Service worker set up');
             
             console.log('=== APP INITIALIZATION COMPLETED SUCCESSFULLY ===');
+            this.initialized = true;
             return { success: true, version: this.version, gitCommit: this.gitCommit };
             
         } catch (error) {
