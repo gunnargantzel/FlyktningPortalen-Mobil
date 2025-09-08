@@ -509,48 +509,12 @@ window.showNotification = function(message, type = 'info') {
     }
 };
 
-// Initialize app when DOM is loaded and MSAL is ready
-document.addEventListener('DOMContentLoaded', () => {
-    console.log('=== DOM Content Loaded Event Fired ===');
-    console.log('CONFIG available:', typeof CONFIG !== 'undefined');
-    console.log('authManager available:', typeof authManager !== 'undefined');
-    console.log('dataverseManager available:', typeof dataverseManager !== 'undefined');
-    
-    // Wait for MSAL to be available
-    const initApp = () => {
-        console.log('Checking for MSAL availability...');
-        if (typeof msal !== 'undefined') {
-            console.log('MSAL is available, initializing app...');
-            try {
-                window.app = new FraværApp();
-                console.log('App initialized successfully in DOMContentLoaded');
-            } catch (error) {
-                console.error('Error initializing app in DOMContentLoaded:', error);
-            }
-        } else {
-            console.log('MSAL not available, retrying in 100ms...');
-            // Retry after a short delay
-            setTimeout(initApp, 100);
-        }
-    };
-    
-    initApp();
-});
+// App initialization is now handled in index.html
+// This prevents multiple initializations and conflicts
 
 // Handle URL parameters for shortcuts
 window.addEventListener('load', () => {
     console.log('=== Window Load Event Fired ===');
-    if (!window.app) {
-        console.log('App not initialized yet, trying from window load event...');
-        if (typeof msal !== 'undefined') {
-            try {
-                window.app = new FraværApp();
-                console.log('App initialized successfully in window load');
-            } catch (error) {
-                console.error('Error initializing app in window load:', error);
-            }
-        }
-    }
     
     // Handle URL parameters for shortcuts
     const urlParams = new URLSearchParams(window.location.search);
