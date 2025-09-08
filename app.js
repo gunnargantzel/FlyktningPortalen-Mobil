@@ -30,6 +30,8 @@ class FraværApp {
         console.log('🚀 initializeApp method called!');
         console.log('This object:', this);
         console.log('This version:', this.version);
+        console.log('This.initialized:', this.initialized);
+        console.log('Call stack:', new Error().stack);
         
         // Prevent multiple initializations
         if (this.initialized) {
@@ -124,8 +126,13 @@ class FraværApp {
     }
 
     async setupServiceWorker() {
+        console.log('🔧 setupServiceWorker called');
+        console.log('window.serviceWorkerRegistered:', window.serviceWorkerRegistered);
+        console.log('navigator.serviceWorker available:', 'serviceWorker' in navigator);
+        
         if ('serviceWorker' in navigator && !window.serviceWorkerRegistered) {
             try {
+                console.log('Registering Service Worker...');
                 const registration = await navigator.serviceWorker.register('/sw.js');
                 console.log('Service Worker registered:', registration);
                 window.serviceWorkerRegistered = true;
@@ -134,6 +141,8 @@ class FraværApp {
             }
         } else if (window.serviceWorkerRegistered) {
             console.log('Service Worker already registered, skipping...');
+        } else {
+            console.log('Service Worker not available in navigator');
         }
     }
 
