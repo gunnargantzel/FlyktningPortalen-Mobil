@@ -275,7 +275,7 @@
         }, 2000);
         
         // Initialize app directly since DOM events might not work
-        setTimeout(() => {
+        setTimeout(async () => {
             console.log('=== DIRECT APP INITIALIZATION ===');
             console.log('window.app exists:', !!window.app);
             try {
@@ -291,11 +291,12 @@
                     // Try to manually call initializeApp if it exists
                     if (window.app && typeof window.app.initializeApp === 'function') {
                         console.log('Manually calling initializeApp...');
-                        window.app.initializeApp().then(() => {
-                            console.log('Manual initialization completed');
-                        }).catch((error) => {
+                        try {
+                            const result = await window.app.initializeApp();
+                            console.log('Manual initialization completed successfully:', result);
+                        } catch (error) {
                             console.error('Manual initialization failed:', error);
-                        });
+                        }
                     } else {
                         console.log('initializeApp method not available');
                     }
