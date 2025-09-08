@@ -1,0 +1,48 @@
+{
+  "name": "fravær-registrering-pwa",
+  "version": "1.0.0",
+  "description": "Progressive Web App for flyktninger til å registrere deltakelse og fravær",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx http-server . -p 8080 -c-1",
+    "dev": "npx http-server . -p 8080 -c-1 -o",
+    "build": "echo 'No build process needed for this PWA'",
+    "test": "echo 'No tests specified'",
+    "lint": "npx eslint *.js",
+    "serve": "npx http-server . -p 3000 -c-1"
+  },
+  "keywords": [
+    "pwa",
+    "progressive-web-app",
+    "flyktninger",
+    "fravær",
+    "deltakelse",
+    "entra-id",
+    "dataverse",
+    "microsoft",
+    "norwegian"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "devDependencies": {
+    "http-server": "^14.1.1",
+    "eslint": "^8.57.0"
+  },
+  "dependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/fravær-registrering-pwa.git"
+  },
+  "bugs": {
+    "url": "https://github.com/your-username/fravær-registrering-pwa/issues"
+  },
+  "homepage": "https://github.com/your-username/fravær-registrering-pwa#readme",
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead"
+  ]
+}

@@ -1,0 +1,191 @@
+{
+  "entities": [
+    {
+      "name": "new_bruker",
+      "displayName": "Bruker",
+      "description": "Bruker informasjon for flyktninger",
+      "fields": [
+        {
+          "name": "new_brukerid",
+          "displayName": "Bruker ID",
+          "type": "PrimaryKey",
+          "description": "Unik identifikator for bruker"
+        },
+        {
+          "name": "new_entra_id",
+          "displayName": "Entra ID",
+          "type": "SingleLine.Text",
+          "description": "Entra ID for autentisering",
+          "required": true,
+          "maxLength": 100
+        },
+        {
+          "name": "new_navn",
+          "displayName": "Navn",
+          "type": "SingleLine.Text",
+          "description": "Fullt navn på bruker",
+          "required": true,
+          "maxLength": 200
+        },
+        {
+          "name": "new_telefon",
+          "displayName": "Telefon",
+          "type": "SingleLine.Text",
+          "description": "Telefonnummer",
+          "maxLength": 20
+        },
+        {
+          "name": "new_epost",
+          "displayName": "E-post",
+          "type": "SingleLine.Text",
+          "description": "E-postadresse",
+          "maxLength": 100
+        },
+        {
+          "name": "new_opprettet",
+          "displayName": "Opprettet",
+          "type": "DateTime",
+          "description": "Når brukeren ble opprettet",
+          "defaultValue": "Now()"
+        }
+      ]
+    },
+    {
+      "name": "new_deltakelse",
+      "displayName": "Deltakelse",
+      "description": "Registrering av deltakelse",
+      "fields": [
+        {
+          "name": "new_deltakelseid",
+          "displayName": "Deltakelse ID",
+          "type": "PrimaryKey",
+          "description": "Unik identifikator for deltakelse"
+        },
+        {
+          "name": "new_bruker",
+          "displayName": "Bruker",
+          "type": "Lookup",
+          "description": "Referanse til bruker",
+          "required": true,
+          "targetEntity": "new_bruker"
+        },
+        {
+          "name": "new_dato",
+          "displayName": "Dato",
+          "type": "DateTime",
+          "description": "Dato for deltakelse",
+          "required": true
+        },
+        {
+          "name": "new_status",
+          "displayName": "Status",
+          "type": "Choice",
+          "description": "Status for deltakelse",
+          "required": true,
+          "choices": [
+            {
+              "value": "Registrert",
+              "label": "Registrert"
+            },
+            {
+              "value": "Bekreftet",
+              "label": "Bekreftet"
+            }
+          ]
+        },
+        {
+          "name": "new_opprettet_av",
+          "displayName": "Opprettet av",
+          "type": "Lookup",
+          "description": "Hvem som opprettet registreringen",
+          "targetEntity": "new_bruker"
+        }
+      ]
+    },
+    {
+      "name": "new_fravær",
+      "displayName": "Fravær",
+      "description": "Registrering av fravær",
+      "fields": [
+        {
+          "name": "new_fraværid",
+          "displayName": "Fravær ID",
+          "type": "PrimaryKey",
+          "description": "Unik identifikator for fravær"
+        },
+        {
+          "name": "new_bruker",
+          "displayName": "Bruker",
+          "type": "Lookup",
+          "description": "Referanse til bruker",
+          "required": true,
+          "targetEntity": "new_bruker"
+        },
+        {
+          "name": "new_dato",
+          "displayName": "Dato",
+          "type": "DateTime",
+          "description": "Dato for fravær",
+          "required": true
+        },
+        {
+          "name": "new_type",
+          "displayName": "Type fravær",
+          "type": "Choice",
+          "description": "Type fravær",
+          "required": true,
+          "choices": [
+            {
+              "value": "Syk",
+              "label": "Syk"
+            },
+            {
+              "value": "Permisjon",
+              "label": "Permisjon"
+            },
+            {
+              "value": "Annet",
+              "label": "Annet"
+            }
+          ]
+        },
+        {
+          "name": "new_beskrivelse",
+          "displayName": "Beskrivelse",
+          "type": "MultipleLines.Text",
+          "description": "Beskrivelse av fraværet",
+          "maxLength": 1000
+        },
+        {
+          "name": "new_status",
+          "displayName": "Status",
+          "type": "Choice",
+          "description": "Status for fravær",
+          "required": true,
+          "choices": [
+            {
+              "value": "Registrert",
+              "label": "Registrert"
+            },
+            {
+              "value": "Godkjent",
+              "label": "Godkjent"
+            },
+            {
+              "value": "Avvist",
+              "label": "Avvist"
+            }
+          ],
+          "defaultValue": "Registrert"
+        },
+        {
+          "name": "new_opprettet_av",
+          "displayName": "Opprettet av",
+          "type": "Lookup",
+          "description": "Hvem som opprettet registreringen",
+          "targetEntity": "new_bruker"
+        }
+      ]
+    }
+  ]
+}
