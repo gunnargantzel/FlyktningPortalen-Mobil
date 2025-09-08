@@ -22,6 +22,8 @@ class FraværApp {
     async initializeApp() {
         try {
             console.log('=== STARTING APP INITIALIZATION ===');
+            console.log('📱 App Version:', this.version);
+            console.log('🔧 Git Commit:', this.gitCommit);
             
             // Show loading screen
             this.showScreen('loading-screen');
@@ -60,11 +62,13 @@ class FraværApp {
             console.log('✓ Service worker set up');
             
             console.log('=== APP INITIALIZATION COMPLETED SUCCESSFULLY ===');
+            return { success: true, version: this.version, gitCommit: this.gitCommit };
             
         } catch (error) {
             console.error('=== APP INITIALIZATION FAILED ===', error);
             this.showError('Feil ved oppstart av appen: ' + error.message);
             this.showScreen('login-screen');
+            throw error;
         }
     }
 
