@@ -13,8 +13,12 @@
     <!-- Styles -->
     <link rel="stylesheet" href="styles.css">
     
-    <!-- MSAL Library -->
-    <script src="lib/msal-browser.min.js"></script>
+    <!-- MSAL Library - Real Microsoft MSAL -->
+    <script src="https://alcdn.msauth.net/browser/2.38.3/js/msal-browser.min.js" 
+            onerror="console.error('Failed to load real MSAL, falling back to local implementation'); 
+                     var script = document.createElement('script'); 
+                     script.src = 'lib/msal-browser.min.js'; 
+                     document.head.appendChild(script);"></script>
 </head>
 <body>
     <!-- Loading Screen -->
@@ -135,6 +139,13 @@
                 if (typeof msal === 'undefined') {
                     console.log('MSAL not available, using mock authentication');
                     return;
+                }
+                
+                // Check if we have real MSAL or local implementation
+                if (msal.PublicClientApplication && msal.PublicClientApplication.prototype.loginPopup) {
+                    console.log('✅ Real Microsoft MSAL detected');
+                } else {
+                    console.log('⚠️ Local MSAL implementation detected, limited functionality');
                 }
                 
                 try {
