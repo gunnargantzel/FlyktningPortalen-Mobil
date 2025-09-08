@@ -27,16 +27,9 @@ class FraværApp {
 
     async initializeApp() {
         console.log('🚀 initializeApp method called!');
-        console.log('📱 App Version:', this.version);
-        console.log('🔧 Git Commit:', this.gitCommit);
-        console.log('🔍 this object:', this);
-        
-        // Test if we can access properties
-        console.log('🔍 this.currentUser:', this.currentUser);
-        console.log('🔍 this.isOnline:', this.isOnline);
         
         try {
-            console.log('=== STARTING APP INITIALIZATION ===');
+            console.log('Starting app initialization...');
             
             // Show loading screen
             this.showScreen('loading-screen');
