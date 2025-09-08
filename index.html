@@ -311,7 +311,17 @@
                     console.log('window.app.gitCommit:', window.app?.gitCommit);
                     
                     // Check if we have multiple app objects
-                    console.log('All window properties with "app":', Object.keys(window).filter(key => key.includes('app')));
+                    const appKeys = Object.keys(window).filter(key => key.includes('app'));
+                    console.log('All window properties with "app":', appKeys);
+                    
+                    // Check each app property
+                    appKeys.forEach(key => {
+                        console.log(`${key}:`, window[key]);
+                        console.log(`${key} constructor:`, window[key]?.constructor?.name);
+                        console.log(`${key} version:`, window[key]?.version);
+                        console.log(`${key} gitCommit:`, window[key]?.gitCommit);
+                        console.log(`${key} testMethod:`, typeof window[key]?.testMethod);
+                    });
                     
                     if (window.app && typeof window.app.testMethod === 'function') {
                         console.log('Testing simple method...');
