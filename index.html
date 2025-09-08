@@ -22,14 +22,64 @@
     <script>
         function loadMSALFallback() {
             console.log('Primary MSAL CDN failed, trying fallback...');
-            const script = document.createElement('script');
-            script.src = 'https://unpkg.com/@azure/msal-browser@2.38.3/dist/msal-browser.min.js';
-            script.onerror = function() {
-                console.error('All MSAL CDNs failed to load');
-                document.getElementById('loading-screen').innerHTML = 
-                    '<div class="loading-spinner"></div><p>Feil ved lasting av autentiseringsbibliotek. Sjekk internettforbindelsen.</p>';
-            };
-            document.head.appendChild(script);
+            const fallbackCDNs = [
+                'https://unpkg.com/@azure/msal-browser@2.38.3/dist/msal-browser.min.js',
+                'https://cdn.jsdelivr.net/npm/@azure/msal-browser@2.38.3/dist/msal-browser.min.js',
+                'https://cdnjs.cloudflare.com/ajax/libs/msal-browser/2.38.3/msal-browser.min.js'
+            ];
+            
+            let currentCDN = 0;
+            
+            function tryNextCDN() {
+                if (currentCDN >= fallbackCDNs.length) {
+                    console.error('All MSAL CDNs failed to load');
+                    showMSALFallbackUI();
+                    return;
+                }
+                
+                const script = document.createElement('script');
+                script.src = fallbackCDNs[currentCDN];
+                script.onerror = function() {
+                    console.log(`CDN ${currentCDN + 1} failed, trying next...`);
+                    currentCDN++;
+                    tryNextCDN();
+                };
+                script.onload = function() {
+                    console.log(`MSAL loaded successfully from CDN ${currentCDN + 1}`);
+                };
+                document.head.appendChild(script);
+            }
+            
+            tryNextCDN();
+        }
+        
+        function showMSALFallbackUI() {
+            const loadingScreen = document.getElementById('loading-screen');
+            if (loadingScreen) {
+                loadingScreen.innerHTML = `
+                    <div style="text-align: center; padding: 40px;">
+                        <div style="font-size: 4rem; margin-bottom: 20px;">⚠️</div>
+                        <h2 style="color: #d13438; margin-bottom: 20px;">Nettverksproblem</h2>
+                        <p style="color: #605e5c; margin-bottom: 20px;">
+                            Kan ikke laste autentiseringsbibliotek. Dette kan skyldes:
+                        </p>
+                        <ul style="text-align: left; color: #605e5c; margin-bottom: 30px;">
+                            <li>Ingen internettforbindelse</li>
+                            <li>Bedriftsnettverk blokkerer eksterne biblioteker</li>
+                            <li>Midlertidig serverproblem</li>
+                        </ul>
+                        <button onclick="location.reload()" style="
+                            background-color: #0078d4; 
+                            color: white; 
+                            border: none; 
+                            padding: 12px 24px; 
+                            border-radius: 6px; 
+                            font-size: 16px; 
+                            cursor: pointer;
+                        ">Prøv igjen</button>
+                    </div>
+                `;
+            }
         }
     </script>
     <script src="https://alcdn.msauth.net/browser/2.38.3/js/msal-browser.min.js" 
