@@ -8,7 +8,6 @@ class FraværApp {
         this.userData = null;
         this.isOnline = navigator.onLine;
         this.offlineQueue = [];
-        this.serviceWorkerRegistered = false;
         
         // Version information
         this.version = '1.0.0-debug';
@@ -117,15 +116,15 @@ class FraværApp {
     }
 
     async setupServiceWorker() {
-        if ('serviceWorker' in navigator && !this.serviceWorkerRegistered) {
+        if ('serviceWorker' in navigator && !window.serviceWorkerRegistered) {
             try {
                 const registration = await navigator.serviceWorker.register('/sw.js');
                 console.log('Service Worker registered:', registration);
-                this.serviceWorkerRegistered = true;
+                window.serviceWorkerRegistered = true;
             } catch (error) {
                 console.error('Service Worker registration failed:', error);
             }
-        } else if (this.serviceWorkerRegistered) {
+        } else if (window.serviceWorkerRegistered) {
             console.log('Service Worker already registered, skipping...');
         }
     }
