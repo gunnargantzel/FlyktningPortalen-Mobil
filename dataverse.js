@@ -244,7 +244,7 @@ class DataverseManager {
         // Simulate delay
         return new Promise((resolve) => {
             setTimeout(() => {
-                if (endpoint.includes('new_bruker') && options.method === 'GET') {
+                if (endpoint.includes('new_bruker') && (!options.method || options.method === 'GET')) {
                     // Mock user lookup
                     resolve({
                         value: [{
