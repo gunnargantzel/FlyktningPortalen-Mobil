@@ -12,6 +12,12 @@ class DataverseManager {
     }
 
     async makeRequest(endpoint, options = {}) {
+        // Check if we're in development mode (mock token)
+        if (this.accessToken === 'mock-access-token') {
+            console.log('Using mock Dataverse response for development');
+            return this.getMockResponse(endpoint, options);
+        }
+        
         if (!this.accessToken) {
             throw new Error('No access token available');
         }
@@ -228,6 +234,66 @@ class DataverseManager {
             day: '2-digit',
             hour: '2-digit',
             minute: '2-digit'
+        });
+    }
+
+    // Mock responses for development
+    getMockResponse(endpoint, options) {
+        console.log(`Mock response for ${endpoint}`, options);
+        
+        // Simulate delay
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                if (endpoint.includes('new_bruker') && options.method === 'GET') {
+                    // Mock user lookup
+                    resolve({
+                        value: [{
+                            new_brukerid: 'mock-user-123',
+                            new_entra_id: 'dev-user-123',
+                            new_navn: 'Development User',
+                            new_telefon: '+47 123 45 678',
+                            new_epost: 'dev@example.com'
+                        }]
+                    });
+                } else if (endpoint.includes('new_deltakelse') && options.method === 'POST') {
+                    // Mock participation creation
+                    resolve({
+                        new_deltakelseid: 'mock-participation-123',
+                        new_dato: new Date().toISOString(),
+                        new_status: 'Registrert'
+                    });
+                } else if (endpoint.includes('new_fravær') && options.method === 'POST') {
+                    // Mock absence creation
+                    resolve({
+                        new_fraværid: 'mock-absence-123',
+                        new_dato: new Date().toISOString(),
+                        new_type: 'Syk',
+                        new_status: 'Registrert'
+                    });
+                } else if (endpoint.includes('new_fravær') && options.method === 'GET') {
+                    // Mock absence list
+                    resolve({
+                        value: [
+                            {
+                                new_fraværid: 'mock-absence-1',
+                                new_dato: new Date(Date.now() - 86400000).toISOString(), // Yesterday
+                                new_type: 'Syk',
+                                new_beskrivelse: 'Hodepine',
+                                new_status: 'Registrert'
+                            },
+                            {
+                                new_fraværid: 'mock-absence-2',
+                                new_dato: new Date(Date.now() - 172800000).toISOString(), // 2 days ago
+                                new_type: 'Permisjon',
+                                new_beskrivelse: 'Legen',
+                                new_status: 'Godkjent'
+                            }
+                        ]
+                    });
+                } else {
+                    resolve({ value: [] });
+                }
+            }, 500); // Simulate network delay
         });
     }
 

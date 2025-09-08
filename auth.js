@@ -149,6 +149,18 @@ class AuthManager {
         try {
             const token = await this.getAccessToken();
             
+            // Check if we're in development mode
+            if (token === 'mock-access-token') {
+                console.log('Using mock user info for development');
+                return {
+                    id: 'dev-user-123',
+                    displayName: 'Development User',
+                    email: 'dev@example.com',
+                    givenName: 'Development',
+                    surname: 'User'
+                };
+            }
+            
             const response = await fetch('https://graph.microsoft.com/v1.0/me', {
                 headers: {
                     'Authorization': `Bearer ${token}`,
