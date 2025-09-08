@@ -274,6 +274,30 @@
             }
         }, 2000);
         
+        // Initialize app directly since DOM events might not work
+        setTimeout(() => {
+            console.log('=== DIRECT APP INITIALIZATION ===');
+            try {
+                if (typeof FraværApp !== 'undefined' && !window.app) {
+                    console.log('Creating app directly...');
+                    window.app = new FraværApp();
+                    console.log('App created directly:', window.app);
+                    
+                    // Try to manually call initializeApp if it exists
+                    if (window.app && typeof window.app.initializeApp === 'function') {
+                        console.log('Manually calling initializeApp...');
+                        window.app.initializeApp().then(() => {
+                            console.log('Manual initialization completed');
+                        }).catch((error) => {
+                            console.error('Manual initialization failed:', error);
+                        });
+                    }
+                }
+            } catch (error) {
+                console.error('Error creating app directly:', error);
+            }
+        }, 1000);
+        
         // Fallback: Show login screen if app doesn't initialize after 5 seconds
         setTimeout(() => {
             const loadingScreen = document.getElementById('loading-screen');
