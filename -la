@@ -1,0 +1,5 @@
+[33m77fba99[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m ci: add Azure Static Web Apps workflow file on-behalf-of: @Azure opensource@microsoft.com
+[33m310d349[m Add Azure deployment configuration
+[33m5768070[m Add offline development mode with mock data
+[33md5a6d01[m Add icons folder and improve MSAL instructions
+[33mbdfef2a[m Add local MSAL fallback
