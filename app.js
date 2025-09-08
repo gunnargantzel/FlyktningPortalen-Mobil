@@ -1,4 +1,6 @@
 // Main application logic for the Fravær Registrering PWA
+// Version: 1.0.0-debug
+// Git Commit: bbb93d1
 
 class FraværApp {
     constructor() {
@@ -7,8 +9,14 @@ class FraværApp {
         this.isOnline = navigator.onLine;
         this.offlineQueue = [];
         
+        // Version information
+        this.version = '1.0.0-debug';
+        this.gitCommit = 'bbb93d1';
+        
         // Don't call initializeApp in constructor - it will be called manually
-        console.log('FraværApp constructor completed');
+        console.log('🚀 FraværApp constructor completed');
+        console.log('📱 App Version:', this.version);
+        console.log('🔧 Git Commit:', this.gitCommit);
     }
 
     async initializeApp() {

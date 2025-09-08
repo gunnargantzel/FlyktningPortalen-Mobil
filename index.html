@@ -252,7 +252,16 @@
     
     <!-- Debug Script -->
     <script>
+        // Version information for debugging
+        const APP_VERSION = '1.0.0-debug';
+        const BUILD_TIMESTAMP = new Date().toISOString();
+        const GIT_COMMIT = 'bbb93d1'; // Latest commit hash
+        
         console.log('=== DEBUG SCRIPT LOADED ===');
+        console.log('📱 App Version:', APP_VERSION);
+        console.log('🕒 Build Timestamp:', BUILD_TIMESTAMP);
+        console.log('🔧 Git Commit:', GIT_COMMIT);
+        console.log('🌐 Environment:', window.location.hostname);
         console.log('CONFIG:', typeof CONFIG !== 'undefined' ? 'Available' : 'NOT AVAILABLE');
         console.log('authManager:', typeof authManager !== 'undefined' ? 'Available' : 'NOT AVAILABLE');
         console.log('dataverseManager:', typeof dataverseManager !== 'undefined' ? 'Available' : 'NOT AVAILABLE');

@@ -1,4 +1,6 @@
 // Dataverse Web API integration for CRUD operations
+// Version: 1.0.0-debug
+// Git Commit: bbb93d1
 
 class DataverseManager {
     constructor() {

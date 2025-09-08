@@ -1,4 +1,6 @@
 // Microsoft Authentication Library (MSAL) integration for Entra ID
+// Version: 1.0.0-debug
+// Git Commit: bbb93d1
 
 class AuthManager {
     constructor() {
