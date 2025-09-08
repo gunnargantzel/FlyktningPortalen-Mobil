@@ -19,6 +19,12 @@ class FraværApp {
         console.log('🔧 Git Commit:', this.gitCommit);
     }
 
+    testMethod() {
+        alert('Test method called!');
+        console.log('🧪 Test method executed');
+        return 'test-success';
+    }
+
     async initializeApp() {
         // Use alert to test if method is called
         alert('initializeApp method called!');

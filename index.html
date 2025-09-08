@@ -297,6 +297,17 @@
                         console.log('App already exists, using existing app');
                     }
                     
+                    // Test simple method first
+                    if (window.app && typeof window.app.testMethod === 'function') {
+                        console.log('Testing simple method...');
+                        try {
+                            const testResult = window.app.testMethod();
+                            console.log('Test method result:', testResult);
+                        } catch (error) {
+                            console.error('Test method failed:', error);
+                        }
+                    }
+                    
                     // Try to manually call initializeApp if it exists
                     if (window.app && typeof window.app.initializeApp === 'function') {
                         console.log('Manually calling initializeApp...');
