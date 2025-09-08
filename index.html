@@ -300,14 +300,20 @@
                     // Try to manually call initializeApp if it exists
                     if (window.app && typeof window.app.initializeApp === 'function') {
                         console.log('Manually calling initializeApp...');
+                        console.log('App object:', window.app);
+                        console.log('initializeApp method:', window.app.initializeApp);
                         try {
+                            console.log('About to call initializeApp...');
                             const result = await window.app.initializeApp();
                             console.log('Manual initialization completed successfully:', result);
                         } catch (error) {
                             console.error('Manual initialization failed:', error);
+                            console.error('Error stack:', error.stack);
                         }
                     } else {
                         console.log('initializeApp method not available');
+                        console.log('window.app:', window.app);
+                        console.log('typeof initializeApp:', typeof window.app?.initializeApp);
                     }
                 } else {
                     console.log('FraværApp class not available');

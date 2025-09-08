@@ -20,10 +20,12 @@ class FraværApp {
     }
 
     async initializeApp() {
+        console.log('🚀 initializeApp method called!');
+        console.log('📱 App Version:', this.version);
+        console.log('🔧 Git Commit:', this.gitCommit);
+        
         try {
             console.log('=== STARTING APP INITIALIZATION ===');
-            console.log('📱 App Version:', this.version);
-            console.log('🔧 Git Commit:', this.gitCommit);
             
             // Show loading screen
             this.showScreen('loading-screen');
