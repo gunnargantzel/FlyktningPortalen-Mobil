@@ -57,6 +57,11 @@
                     <p>Se din fraværsoversikt</p>
                     <button class="btn btn-secondary">Åpne</button>
                 </div>
+                <div class="menu-card">
+                    <h3>Test Dataverse</h3>
+                    <p>Test tilkobling til Dataverse</p>
+                    <button id="test-dataverse-btn" class="btn btn-info">Test</button>
+                </div>
             </div>
         </div>
     </div>
@@ -89,6 +94,9 @@
                 
                 // Initialize Service Worker
                 await this.initializeServiceWorker();
+                
+                // Initialize Dataverse
+                await this.initializeDataverse();
                 
                 // Show login screen after 2 seconds
                 setTimeout(() => {
@@ -146,6 +154,23 @@
                 }
             }
             
+            async initializeDataverse() {
+                console.log('🗄️ Initializing Dataverse...');
+                
+                try {
+                    // Mock Dataverse configuration
+                    this.dataverseConfig = {
+                        baseUrl: 'https://mock-dataverse.crm.dynamics.com',
+                        apiVersion: '9.2',
+                        mockMode: true
+                    };
+                    
+                    console.log('✅ Dataverse initialized successfully (mock mode)');
+                } catch (error) {
+                    console.error('❌ Dataverse initialization failed:', error);
+                }
+            }
+            
             showScreen(screenId) {
                 console.log('📱 Showing screen:', screenId);
                 
@@ -183,6 +208,17 @@
                     });
                 }
                 
+                // Test Dataverse button
+                const testDataverseBtn = document.getElementById('test-dataverse-btn');
+                if (testDataverseBtn) {
+                    testDataverseBtn.addEventListener('click', async () => {
+                        console.log('🔗 Test Dataverse button clicked');
+                        const result = await this.testDataverseConnection();
+                        console.log('Dataverse test result:', result);
+                        alert(`Dataverse test: ${result.success ? 'Success' : 'Failed'} - ${result.message}`);
+                    });
+                }
+                
                 console.log('✅ Event listeners set up');
             }
             
@@ -212,6 +248,18 @@
                 console.log('🚪 Handling logout...');
                 this.currentUser = null;
                 this.showScreen('login-screen');
+            }
+            
+            async testDataverseConnection() {
+                console.log('🔗 Testing Dataverse connection...');
+                
+                if (this.dataverseConfig && this.dataverseConfig.mockMode) {
+                    console.log('✅ Dataverse connection test successful (mock mode)');
+                    return { success: true, message: 'Mock connection successful' };
+                } else {
+                    console.log('❌ Dataverse not configured');
+                    return { success: false, message: 'Dataverse not configured' };
+                }
             }
         }
         
