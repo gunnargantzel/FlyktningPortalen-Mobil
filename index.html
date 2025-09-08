@@ -298,6 +298,11 @@
                     }
                     
                     // Test simple method first
+                    console.log('Checking for testMethod...');
+                    console.log('window.app:', window.app);
+                    console.log('typeof window.app.testMethod:', typeof window.app?.testMethod);
+                    console.log('window.app.testMethod:', window.app?.testMethod);
+                    
                     if (window.app && typeof window.app.testMethod === 'function') {
                         console.log('Testing simple method...');
                         try {
@@ -306,6 +311,8 @@
                         } catch (error) {
                             console.error('Test method failed:', error);
                         }
+                    } else {
+                        console.log('testMethod not available or not a function');
                     }
                     
                     // Try to manually call initializeApp if it exists
