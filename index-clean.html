@@ -138,11 +138,11 @@
                 }
                 
                 try {
-                    // Real Entra ID configuration
+                    // Real Entra ID configuration from CONFIG
                     const msalConfig = {
                         auth: {
-                            clientId: 'YOUR_CLIENT_ID_HERE', // Replace with your actual client ID
-                            authority: 'https://login.microsoftonline.com/YOUR_TENANT_ID_HERE', // Replace with your tenant ID
+                            clientId: 'c25b351f-417b-46cf-b736-2970d45273fc',
+                            authority: 'https://login.microsoftonline.com/fb7e0b12-d8fc-4f14-bd1a-ad9c8667a7e6',
                             redirectUri: window.location.origin + '/index-clean.html'
                         },
                         cache: {
@@ -189,14 +189,19 @@
                 console.log('🗄️ Initializing Dataverse...');
                 
                 try {
-                    // Mock Dataverse configuration
+                    // Real Dataverse configuration from CONFIG
                     this.dataverseConfig = {
-                        baseUrl: 'https://mock-dataverse.crm.dynamics.com',
+                        baseUrl: 'https://smittevaksine2022utvikling.crm4.dynamics.com/api/data/v9.2/',
                         apiVersion: '9.2',
-                        mockMode: true
+                        entities: {
+                            user: 'new_bruker',
+                            participation: 'new_deltakelse',
+                            absence: 'new_fravær'
+                        },
+                        mockMode: false // Set to true for offline development
                     };
                     
-                    console.log('✅ Dataverse initialized successfully (mock mode)');
+                    console.log('✅ Dataverse initialized successfully');
                 } catch (error) {
                     console.error('❌ Dataverse initialization failed:', error);
                 }
@@ -343,6 +348,27 @@
                 if (this.dataverseConfig && this.dataverseConfig.mockMode) {
                     console.log('✅ Dataverse connection test successful (mock mode)');
                     return { success: true, message: 'Mock connection successful' };
+                } else if (this.dataverseConfig) {
+                    try {
+                        // Test real Dataverse connection
+                        const response = await fetch(this.dataverseConfig.baseUrl + 'WhoAmI()', {
+                            headers: {
+                                'Authorization': 'Bearer ' + (this.currentUser?.account?.accessToken || 'mock-token'),
+                                'Accept': 'application/json'
+                            }
+                        });
+                        
+                        if (response.ok) {
+                            console.log('✅ Dataverse connection test successful');
+                            return { success: true, message: 'Real Dataverse connection successful' };
+                        } else {
+                            console.log('❌ Dataverse connection test failed:', response.status);
+                            return { success: false, message: `Connection failed: ${response.status}` };
+                        }
+                    } catch (error) {
+                        console.error('❌ Dataverse connection test error:', error);
+                        return { success: false, message: 'Connection error: ' + error.message };
+                    }
                 } else {
                     console.log('❌ Dataverse not configured');
                     return { success: false, message: 'Dataverse not configured' };
