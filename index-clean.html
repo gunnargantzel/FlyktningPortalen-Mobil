@@ -109,9 +109,12 @@
                         if (loadingScreen && !loadingScreen.classList.contains('hidden')) {
                             console.log('🚨 Fallback: Force showing login screen');
                             loadingScreen.classList.add('hidden');
+                            loadingScreen.style.display = 'none';
                             const loginScreen = document.getElementById('login-screen');
                             if (loginScreen) {
                                 loginScreen.classList.remove('hidden');
+                                loginScreen.style.display = 'flex';
+                                console.log('🚨 Fallback: Login screen forced to show');
                             }
                         }
                     }, 1000);
@@ -188,17 +191,22 @@
             showScreen(screenId) {
                 console.log('📱 Showing screen:', screenId);
                 
-                // Hide all screens
+                // Hide all screens with multiple methods
                 document.querySelectorAll('.screen').forEach(screen => {
                     screen.classList.add('hidden');
+                    screen.style.display = 'none';
                 });
                 
-                // Show target screen
+                // Show target screen with multiple methods
                 const targetScreen = document.getElementById(screenId);
                 if (targetScreen) {
                     targetScreen.classList.remove('hidden');
+                    targetScreen.style.display = 'flex';
                     this.currentScreen = screenId;
                     console.log('✅ Screen shown:', screenId);
+                    console.log('Screen element:', targetScreen);
+                    console.log('Screen classes:', targetScreen.className);
+                    console.log('Screen style:', targetScreen.style.display);
                 } else {
                     console.error('❌ Screen not found:', screenId);
                 }
