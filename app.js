@@ -25,6 +25,10 @@ class FraværApp {
         console.log('🔧 Git Commit:', this.gitCommit);
         console.log('🔍 this object:', this);
         
+        // Test if we can access properties
+        console.log('🔍 this.currentUser:', this.currentUser);
+        console.log('🔍 this.isOnline:', this.isOnline);
+        
         try {
             console.log('=== STARTING APP INITIALIZATION ===');
             

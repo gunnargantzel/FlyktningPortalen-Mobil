@@ -305,6 +305,11 @@
                         try {
                             console.log('About to call initializeApp...');
                             console.log('this context before call:', window.app);
+                            
+                            // Test if method exists and is callable
+                            console.log('Method exists:', typeof window.app.initializeApp === 'function');
+                            console.log('Method name:', window.app.initializeApp.name);
+                            
                             const result = await window.app.initializeApp.call(window.app);
                             console.log('Manual initialization completed successfully:', result);
                         } catch (error) {
