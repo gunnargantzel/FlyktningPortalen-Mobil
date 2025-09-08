@@ -13,48 +13,21 @@
     <!-- Styles -->
     <link rel="stylesheet" href="styles.css">
     
-    <!-- MSAL Library - Try real MSAL first, fallback to local -->
-    <script>
-        // Try to load real MSAL from multiple CDNs
-        const msalCDNs = [
-            'https://alcdn.msauth.net/browser/2.38.3/js/msal-browser.min.js',
-            'https://unpkg.com/@azure/msal-browser@2.38.3/dist/msal-browser.min.js',
-            'https://cdn.jsdelivr.net/npm/@azure/msal-browser@2.38.3/dist/msal-browser.min.js',
-            'https://unpkg.com/@azure/msal-browser@2.38.0/dist/msal-browser.min.js',
-            'https://cdn.jsdelivr.net/npm/@azure/msal-browser@2.38.0/dist/msal-browser.min.js'
-        ];
-        
-        let currentCDN = 0;
-        
-        function tryLoadMSAL() {
-            if (currentCDN >= msalCDNs.length) {
-                console.log('All MSAL CDNs failed, using local implementation');
-                loadLocalMSAL();
-                return;
-            }
-            
-            const script = document.createElement('script');
-            script.src = msalCDNs[currentCDN];
-            script.onload = function() {
-                console.log('✅ Real MSAL loaded from CDN:', msalCDNs[currentCDN]);
-            };
-            script.onerror = function() {
-                console.log('❌ Failed to load MSAL from:', msalCDNs[currentCDN]);
-                currentCDN++;
-                tryLoadMSAL();
-            };
-            document.head.appendChild(script);
-        }
-        
-        function loadLocalMSAL() {
-            const script = document.createElement('script');
-            script.src = 'lib/msal-browser.min.js';
-            document.head.appendChild(script);
-        }
-        
-        // Start loading MSAL
-        tryLoadMSAL();
-    </script>
+    <!-- MSAL Library - Force use of real MSAL for Entra ID authentication -->
+    <script src="https://alcdn.msauth.net/browser/2.38.4/js/msal-browser.min.js" 
+            integrity="sha384-..." 
+            crossorigin="anonymous"
+            onerror="console.error('Failed to load real MSAL, trying alternative...'); 
+                     var script = document.createElement('script');
+                     script.src = 'https://unpkg.com/@azure/msal-browser@latest/dist/msal-browser.min.js';
+                     script.onload = function() { console.log('✅ Real MSAL loaded from unpkg'); };
+                     script.onerror = function() { 
+                         console.error('All real MSAL sources failed, loading local implementation');
+                         var localScript = document.createElement('script');
+                         localScript.src = 'lib/msal-browser.min.js';
+                         document.head.appendChild(localScript);
+                     };
+                     document.head.appendChild(script);"></script>
 </head>
 <body>
     <!-- Loading Screen -->
