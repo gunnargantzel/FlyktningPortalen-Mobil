@@ -27,6 +27,8 @@ class FraværApp {
 
     async initializeApp() {
         console.log('🚀 initializeApp method called!');
+        console.log('This object:', this);
+        console.log('This version:', this.version);
         
         try {
             console.log('Starting app initialization...');
