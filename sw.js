@@ -10,8 +10,7 @@ const STATIC_CACHE_URLS = [
     '/dataverse.js',
     '/config.js',
     '/manifest.json',
-    '/icons/icon-192x192.png',
-    '/icons/icon-512x512.png'
+    '/lib/msal-browser.min.js'
 ];
 
 // Install event - cache static resources
@@ -270,8 +269,6 @@ self.addEventListener('push', (event) => {
     
     const options = {
         body: 'Du har en ny melding i Fravær Registrering',
-        icon: '/icons/icon-192x192.png',
-        badge: '/icons/icon-72x72.png',
         vibrate: [100, 50, 100],
         data: {
             dateOfArrival: Date.now(),
@@ -280,13 +277,11 @@ self.addEventListener('push', (event) => {
         actions: [
             {
                 action: 'explore',
-                title: 'Åpne app',
-                icon: '/icons/icon-192x192.png'
+                title: 'Åpne app'
             },
             {
                 action: 'close',
-                title: 'Lukk',
-                icon: '/icons/icon-192x192.png'
+                title: 'Lukk'
             }
         ]
     };

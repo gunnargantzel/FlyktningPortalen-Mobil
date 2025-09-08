@@ -144,6 +144,8 @@ class FraværApp {
             console.error('Failed to handle authenticated user:', error);
             this.showError('Feil ved henting av brukerdata');
             this.showScreen('login-screen');
+        } finally {
+            this.hideLoading();
         }
     }
 
