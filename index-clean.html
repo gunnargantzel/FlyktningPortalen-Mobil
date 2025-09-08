@@ -100,7 +100,21 @@
                 
                 // Show login screen after 2 seconds
                 setTimeout(() => {
+                    console.log('⏰ Timeout reached, showing login screen...');
                     this.showScreen('login-screen');
+                    
+                    // Fallback: Force show login screen if still on loading
+                    setTimeout(() => {
+                        const loadingScreen = document.getElementById('loading-screen');
+                        if (loadingScreen && !loadingScreen.classList.contains('hidden')) {
+                            console.log('🚨 Fallback: Force showing login screen');
+                            loadingScreen.classList.add('hidden');
+                            const loginScreen = document.getElementById('login-screen');
+                            if (loginScreen) {
+                                loginScreen.classList.remove('hidden');
+                            }
+                        }
+                    }, 1000);
                 }, 2000);
                 
                 // Set up event listeners
@@ -184,6 +198,9 @@
                 if (targetScreen) {
                     targetScreen.classList.remove('hidden');
                     this.currentScreen = screenId;
+                    console.log('✅ Screen shown:', screenId);
+                } else {
+                    console.error('❌ Screen not found:', screenId);
                 }
             }
             
