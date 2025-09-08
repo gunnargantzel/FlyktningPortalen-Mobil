@@ -13,42 +13,48 @@ class FraværApp {
 
     async initializeApp() {
         try {
-            console.log('Starting app initialization...');
+            console.log('=== STARTING APP INITIALIZATION ===');
             
             // Show loading screen
             this.showScreen('loading-screen');
-            console.log('Loading screen shown');
+            console.log('✓ Loading screen shown');
             
             // Initialize authentication
-            console.log('Initializing authentication...');
-            await authManager.initialize();
-            console.log('Authentication initialized');
+            console.log('→ Initializing authentication...');
+            const authResult = await authManager.initialize();
+            console.log('✓ Authentication initialized, result:', authResult);
             
             // Check if user is already authenticated
-            if (authManager.isAuthenticated()) {
-                console.log('User is authenticated, handling authenticated user...');
+            const isAuth = authManager.isAuthenticated();
+            console.log('→ Checking authentication status:', isAuth);
+            
+            if (isAuth) {
+                console.log('→ User is authenticated, handling authenticated user...');
                 await this.handleAuthenticatedUser();
             } else {
-                console.log('User not authenticated, showing login screen...');
+                console.log('→ User not authenticated, showing login screen...');
                 this.showScreen('login-screen');
             }
             
             // Set up event listeners
-            console.log('Setting up event listeners...');
+            console.log('→ Setting up event listeners...');
             this.setupEventListeners();
+            console.log('✓ Event listeners set up');
             
             // Set up offline handling
-            console.log('Setting up offline handling...');
+            console.log('→ Setting up offline handling...');
             this.setupOfflineHandling();
+            console.log('✓ Offline handling set up');
             
             // Set up service worker
-            console.log('Setting up service worker...');
+            console.log('→ Setting up service worker...');
             this.setupServiceWorker();
+            console.log('✓ Service worker set up');
             
-            console.log('App initialization completed successfully');
+            console.log('=== APP INITIALIZATION COMPLETED SUCCESSFULLY ===');
             
         } catch (error) {
-            console.error('Failed to initialize app:', error);
+            console.error('=== APP INITIALIZATION FAILED ===', error);
             this.showError('Feil ved oppstart av appen: ' + error.message);
             this.showScreen('login-screen');
         }
