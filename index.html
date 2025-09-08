@@ -250,142 +250,53 @@
     <script src="dataverse.js"></script>
     <script src="app.js"></script>
     
-    <!-- Debug Script -->
+    <!-- Simple App Initialization -->
     <script>
-        // Version information for debugging
-        const APP_VERSION = '1.0.0-debug';
-        const BUILD_TIMESTAMP = new Date().toISOString();
-        const GIT_COMMIT = 'bbb93d1'; // Latest commit hash
+        console.log('=== SIMPLE APP INITIALIZATION ===');
         
-        console.log('=== DEBUG SCRIPT LOADED ===');
-        console.log('📱 App Version:', APP_VERSION);
-        console.log('🕒 Build Timestamp:', BUILD_TIMESTAMP);
-        console.log('🔧 Git Commit:', GIT_COMMIT);
-        console.log('🌐 Environment:', window.location.hostname);
-        console.log('CONFIG:', typeof CONFIG !== 'undefined' ? 'Available' : 'NOT AVAILABLE');
-        console.log('authManager:', typeof authManager !== 'undefined' ? 'Available' : 'NOT AVAILABLE');
-        console.log('dataverseManager:', typeof dataverseManager !== 'undefined' ? 'Available' : 'NOT AVAILABLE');
-        console.log('msal:', typeof msal !== 'undefined' ? 'Available' : 'NOT AVAILABLE');
-        
-        // Test if we can create the app
-        setTimeout(() => {
-            console.log('=== TESTING APP CREATION ===');
+        // Wait for everything to load
+        window.addEventListener('load', () => {
+            console.log('Window loaded, initializing app...');
+            
+            // Simple initialization
             try {
                 if (typeof FraværApp !== 'undefined') {
-                    console.log('FraværApp class is available');
-                    const testApp = new FraværApp();
-                    console.log('App created successfully:', testApp);
-                } else {
-                    console.error('FraværApp class is NOT available');
-                }
-            } catch (error) {
-                console.error('Error creating app:', error);
-            }
-        }, 2000);
-        
-        // Initialize app directly since DOM events might not work
-        setTimeout(async () => {
-            console.log('=== DIRECT APP INITIALIZATION ===');
-            console.log('window.app exists:', !!window.app);
-            try {
-                if (typeof FraværApp !== 'undefined') {
-                    if (!window.app) {
-                        console.log('Creating app directly...');
-                        window.app = new FraværApp();
-                        console.log('App created directly:', window.app);
-                    } else {
-                        console.log('App already exists, using existing app');
-                    }
+                    console.log('Creating new app instance...');
+                    window.app = new FraværApp();
                     
-                    // Test simple method first
-                    console.log('Checking for testMethod...');
-                    console.log('window.app:', window.app);
-                    console.log('window.app constructor:', window.app?.constructor?.name);
-                    console.log('window.app keys:', Object.keys(window.app || {}));
-                    console.log('window.app keys details:', Object.keys(window.app || {}).map(key => `${key}: ${typeof window.app[key]}`));
-                    console.log('typeof window.app.testMethod:', typeof window.app?.testMethod);
-                    console.log('window.app.testMethod:', window.app?.testMethod);
-                    
-                    // Check if this is the right app object
-                    console.log('window.app.version:', window.app?.version);
-                    console.log('window.app.gitCommit:', window.app?.gitCommit);
-                    
-                    // Check if we have multiple app objects
-                    const appKeys = Object.keys(window).filter(key => key.includes('app'));
-                    console.log('All window properties with "app":', appKeys);
-                    
-                    // Check each app property
-                    appKeys.forEach(key => {
-                        console.log(`${key}:`, window[key]);
-                        console.log(`${key} constructor:`, window[key]?.constructor?.name);
-                        console.log(`${key} version:`, window[key]?.version);
-                        console.log(`${key} gitCommit:`, window[key]?.gitCommit);
-                        console.log(`${key} testMethod:`, typeof window[key]?.testMethod);
-                        
-                        // If this is the main app object, check all its properties
-                        if (key === 'app' && window[key]) {
-                            console.log(`${key} all properties:`, Object.getOwnPropertyNames(window[key]));
-                            console.log(`${key} prototype:`, Object.getOwnPropertyNames(Object.getPrototypeOf(window[key])));
-                        }
+                    // Call initializeApp directly
+                    console.log('Calling initializeApp...');
+                    window.app.initializeApp().then(() => {
+                        console.log('App initialized successfully!');
+                    }).catch((error) => {
+                        console.error('App initialization failed:', error);
+                        // Show login screen as fallback
+                        document.getElementById('loading-screen').classList.add('hidden');
+                        document.getElementById('login-screen').classList.remove('hidden');
                     });
-                    
-                    if (window.app && typeof window.app.testMethod === 'function') {
-                        console.log('Testing simple method...');
-                        try {
-                            const testResult = window.app.testMethod();
-                            console.log('Test method result:', testResult);
-                        } catch (error) {
-                            console.error('Test method failed:', error);
-                        }
-                    } else {
-                        console.log('testMethod not available or not a function');
-                    }
-                    
-                    // Try to manually call initializeApp if it exists
-                    if (window.app && typeof window.app.initializeApp === 'function') {
-                        console.log('Manually calling initializeApp...');
-                        console.log('App object:', window.app);
-                        console.log('initializeApp method:', window.app.initializeApp);
-                        try {
-                            console.log('About to call initializeApp...');
-                            console.log('this context before call:', window.app);
-                            
-                            // Test if method exists and is callable
-                            console.log('Method exists:', typeof window.app.initializeApp === 'function');
-                            console.log('Method name:', window.app.initializeApp.name);
-                            
-                            const result = await window.app.initializeApp.call(window.app);
-                            console.log('Manual initialization completed successfully:', result);
-                        } catch (error) {
-                            console.error('Manual initialization failed:', error);
-                            console.error('Error stack:', error.stack);
-                        }
-                    } else {
-                        console.log('initializeApp method not available');
-                        console.log('window.app:', window.app);
-                        console.log('typeof initializeApp:', typeof window.app?.initializeApp);
-                    }
                 } else {
-                    console.log('FraværApp class not available');
+                    console.error('FraværApp class not available');
+                    // Show login screen as fallback
+                    document.getElementById('loading-screen').classList.add('hidden');
+                    document.getElementById('login-screen').classList.remove('hidden');
                 }
             } catch (error) {
-                console.error('Error in direct initialization:', error);
+                console.error('Error during app initialization:', error);
+                // Show login screen as fallback
+                document.getElementById('loading-screen').classList.add('hidden');
+                document.getElementById('login-screen').classList.remove('hidden');
             }
-        }, 1000);
+        });
         
-        // Fallback: Show login screen if app doesn't initialize after 5 seconds
+        // Fallback: Show login screen after 3 seconds if still loading
         setTimeout(() => {
             const loadingScreen = document.getElementById('loading-screen');
-            const loginScreen = document.getElementById('login-screen');
-            
             if (loadingScreen && !loadingScreen.classList.contains('hidden')) {
-                console.log('=== FALLBACK: Showing login screen ===');
+                console.log('Timeout: Showing login screen');
                 loadingScreen.classList.add('hidden');
-                if (loginScreen) {
-                    loginScreen.classList.remove('hidden');
-                }
+                document.getElementById('login-screen').classList.remove('hidden');
             }
-        }, 5000);
+        }, 3000);
     </script>
 </body>
 </html>

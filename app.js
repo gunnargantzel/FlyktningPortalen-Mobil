@@ -26,9 +26,6 @@ class FraværApp {
     }
 
     async initializeApp() {
-        // Use alert to test if method is called
-        alert('initializeApp method called!');
-        
         console.log('🚀 initializeApp method called!');
         console.log('📱 App Version:', this.version);
         console.log('🔧 Git Commit:', this.gitCommit);
