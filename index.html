@@ -302,12 +302,16 @@
                     console.log('window.app:', window.app);
                     console.log('window.app constructor:', window.app?.constructor?.name);
                     console.log('window.app keys:', Object.keys(window.app || {}));
+                    console.log('window.app keys details:', Object.keys(window.app || {}).map(key => `${key}: ${typeof window.app[key]}`));
                     console.log('typeof window.app.testMethod:', typeof window.app?.testMethod);
                     console.log('window.app.testMethod:', window.app?.testMethod);
                     
                     // Check if this is the right app object
                     console.log('window.app.version:', window.app?.version);
                     console.log('window.app.gitCommit:', window.app?.gitCommit);
+                    
+                    // Check if we have multiple app objects
+                    console.log('All window properties with "app":', Object.keys(window).filter(key => key.includes('app')));
                     
                     if (window.app && typeof window.app.testMethod === 'function') {
                         console.log('Testing simple method...');
