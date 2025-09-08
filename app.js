@@ -465,9 +465,19 @@ window.showNotification = function(message, type = 'info') {
     }
 };
 
-// Initialize app when DOM is loaded
+// Initialize app when DOM is loaded and MSAL is ready
 document.addEventListener('DOMContentLoaded', () => {
-    window.app = new FraværApp();
+    // Wait for MSAL to be available
+    const initApp = () => {
+        if (typeof msal !== 'undefined') {
+            window.app = new FraværApp();
+        } else {
+            // Retry after a short delay
+            setTimeout(initApp, 100);
+        }
+    };
+    
+    initApp();
 });
 
 // Handle URL parameters for shortcuts

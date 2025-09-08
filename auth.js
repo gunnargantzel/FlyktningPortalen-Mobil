@@ -9,6 +9,11 @@ class AuthManager {
 
     async initialize() {
         try {
+            // Check if MSAL is available
+            if (typeof msal === 'undefined') {
+                throw new Error('MSAL library not loaded');
+            }
+            
             // Initialize MSAL instance
             this.msalInstance = new msal.PublicClientApplication({
                 auth: CONFIG.auth,
