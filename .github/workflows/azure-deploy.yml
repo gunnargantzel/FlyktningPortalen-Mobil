@@ -1,0 +1,36 @@
+name: Deploy to Azure Web App
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 'Checkout GitHub Action'
+      uses: actions/checkout@v3
+      
+    - name: 'Setup Node.js'
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+        
+    - name: 'Install dependencies'
+      run: |
+        npm install
+        
+    - name: 'Build PWA'
+      run: |
+        echo "Building PWA..."
+        # No build process needed for static files
+        
+    - name: 'Deploy to Azure Web App'
+      uses: azure/webapps-deploy@v2
+      with:
+        app-name: 'flyktning-portalen-mobil'
+        publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE }}
+        package: .
