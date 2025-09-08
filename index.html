@@ -19,8 +19,6 @@
     <link rel="stylesheet" href="styles.css">
     
     <!-- Microsoft Authentication Library -->
-    <script src="https://alcdn.msauth.net/browser/2.38.3/js/msal-browser.min.js" 
-            onerror="loadMSALFallback()"></script>
     <script>
         function loadMSALFallback() {
             console.log('Primary MSAL CDN failed, trying fallback...');
@@ -34,6 +32,8 @@
             document.head.appendChild(script);
         }
     </script>
+    <script src="https://alcdn.msauth.net/browser/2.38.3/js/msal-browser.min.js" 
+            onerror="loadMSALFallback()"></script>
     <script>
         // Ensure MSAL is loaded before initializing app
         window.addEventListener('load', function() {
