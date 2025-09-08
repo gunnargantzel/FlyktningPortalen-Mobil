@@ -252,51 +252,57 @@
     
     <!-- Simple App Initialization -->
     <script>
-        console.log('=== SIMPLE APP INITIALIZATION ===');
-        
-        // Wait for everything to load
-        window.addEventListener('load', () => {
-            console.log('Window loaded, initializing app...');
+        // Prevent multiple initializations
+        if (window.appInitialized) {
+            console.log('App already initialized, skipping...');
+        } else {
+            window.appInitialized = true;
+            console.log('=== SIMPLE APP INITIALIZATION ===');
             
-            // Simple initialization
-            try {
-                if (typeof FraværApp !== 'undefined') {
-                    console.log('Creating new app instance...');
-                    window.app = new FraværApp();
-                    
-                    // Call initializeApp directly
-                    console.log('Calling initializeApp...');
-                    window.app.initializeApp().then(() => {
-                        console.log('App initialized successfully!');
-                    }).catch((error) => {
-                        console.error('App initialization failed:', error);
+            // Wait for everything to load
+            window.addEventListener('load', () => {
+                console.log('Window loaded, initializing app...');
+                
+                // Simple initialization
+                try {
+                    if (typeof FraværApp !== 'undefined') {
+                        console.log('Creating new app instance...');
+                        window.app = new FraværApp();
+                        
+                        // Call initializeApp directly
+                        console.log('Calling initializeApp...');
+                        window.app.initializeApp().then(() => {
+                            console.log('App initialized successfully!');
+                        }).catch((error) => {
+                            console.error('App initialization failed:', error);
+                            // Show login screen as fallback
+                            document.getElementById('loading-screen').classList.add('hidden');
+                            document.getElementById('login-screen').classList.remove('hidden');
+                        });
+                    } else {
+                        console.error('FraværApp class not available');
                         // Show login screen as fallback
                         document.getElementById('loading-screen').classList.add('hidden');
                         document.getElementById('login-screen').classList.remove('hidden');
-                    });
-                } else {
-                    console.error('FraværApp class not available');
+                    }
+                } catch (error) {
+                    console.error('Error during app initialization:', error);
                     // Show login screen as fallback
                     document.getElementById('loading-screen').classList.add('hidden');
                     document.getElementById('login-screen').classList.remove('hidden');
                 }
-            } catch (error) {
-                console.error('Error during app initialization:', error);
-                // Show login screen as fallback
-                document.getElementById('loading-screen').classList.add('hidden');
-                document.getElementById('login-screen').classList.remove('hidden');
-            }
-        });
-        
-        // Fallback: Show login screen after 3 seconds if still loading
-        setTimeout(() => {
-            const loadingScreen = document.getElementById('loading-screen');
-            if (loadingScreen && !loadingScreen.classList.contains('hidden')) {
-                console.log('Timeout: Showing login screen');
-                loadingScreen.classList.add('hidden');
-                document.getElementById('login-screen').classList.remove('hidden');
-            }
-        }, 3000);
+            });
+            
+            // Fallback: Show login screen after 5 seconds if still loading
+            setTimeout(() => {
+                const loadingScreen = document.getElementById('loading-screen');
+                if (loadingScreen && !loadingScreen.classList.contains('hidden')) {
+                    console.log('Timeout: Showing login screen');
+                    loadingScreen.classList.add('hidden');
+                    document.getElementById('login-screen').classList.remove('hidden');
+                }
+            }, 5000);
+        }
     </script>
 </body>
 </html>
