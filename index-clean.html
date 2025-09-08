@@ -12,6 +12,9 @@
     
     <!-- Styles -->
     <link rel="stylesheet" href="styles.css">
+    
+    <!-- MSAL Library -->
+    <script src="lib/msal-browser.min.js"></script>
 </head>
 <body>
     <!-- Loading Screen -->
@@ -68,6 +71,8 @@
                 console.log('🚀 CleanApp constructor called');
                 this.currentScreen = 'loading-screen';
                 this.initialized = false;
+                this.msalInstance = null;
+                this.currentUser = null;
             }
             
             async initialize() {
@@ -79,6 +84,9 @@
                 console.log('🔧 Initializing CleanApp...');
                 this.initialized = true;
                 
+                // Initialize MSAL
+                await this.initializeMSAL();
+                
                 // Show login screen after 2 seconds
                 setTimeout(() => {
                     this.showScreen('login-screen');
@@ -88,6 +96,29 @@
                 this.setupEventListeners();
                 
                 console.log('✅ CleanApp initialized successfully');
+            }
+            
+            async initializeMSAL() {
+                console.log('🔐 Initializing MSAL...');
+                
+                if (typeof msal === 'undefined') {
+                    console.log('MSAL not available, using mock authentication');
+                    return;
+                }
+                
+                try {
+                    const msalConfig = {
+                        auth: {
+                            clientId: 'mock-client-id',
+                            authority: 'https://login.microsoftonline.com/mock-tenant'
+                        }
+                    };
+                    
+                    this.msalInstance = new msal.PublicClientApplication(msalConfig);
+                    console.log('✅ MSAL initialized successfully');
+                } catch (error) {
+                    console.error('❌ MSAL initialization failed:', error);
+                }
             }
             
             showScreen(screenId) {
@@ -114,7 +145,7 @@
                 if (loginBtn) {
                     loginBtn.addEventListener('click', () => {
                         console.log('🔐 Login button clicked');
-                        this.showScreen('main-screen');
+                        this.handleLogin();
                     });
                 }
                 
@@ -123,11 +154,39 @@
                 if (logoutBtn) {
                     logoutBtn.addEventListener('click', () => {
                         console.log('🚪 Logout button clicked');
-                        this.showScreen('login-screen');
+                        this.handleLogout();
                     });
                 }
                 
                 console.log('✅ Event listeners set up');
+            }
+            
+            async handleLogin() {
+                console.log('🔐 Handling login...');
+                
+                if (this.msalInstance) {
+                    try {
+                        console.log('Using MSAL for authentication...');
+                        // Mock login for now
+                        this.currentUser = { name: 'Test User', email: 'test@example.com' };
+                        console.log('✅ Mock login successful');
+                    } catch (error) {
+                        console.error('❌ MSAL login failed:', error);
+                        // Fallback to mock login
+                        this.currentUser = { name: 'Test User', email: 'test@example.com' };
+                    }
+                } else {
+                    console.log('Using mock authentication...');
+                    this.currentUser = { name: 'Test User', email: 'test@example.com' };
+                }
+                
+                this.showScreen('main-screen');
+            }
+            
+            handleLogout() {
+                console.log('🚪 Handling logout...');
+                this.currentUser = null;
+                this.showScreen('login-screen');
             }
         }
         
