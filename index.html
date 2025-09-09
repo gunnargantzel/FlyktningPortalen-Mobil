@@ -851,6 +851,12 @@
                         await this.getEntityMetadata('socio_deltakelse');
                     } catch (metadataError) {
                         console.log('⚠️ Could not fetch metadata:', metadataError);
+                        // Try alternative approach - fetch existing records to see field structure
+                        try {
+                            await this.fetchSampleRecord();
+                        } catch (sampleError) {
+                            console.log('⚠️ Could not fetch sample record:', sampleError);
+                        }
                     }
                     
                     // Remove null/empty values to avoid issues
@@ -1166,11 +1172,85 @@
                     const tokenResponse = await this.msalInstance.acquireTokenSilent(tokenRequest);
                     const accessToken = tokenResponse.accessToken;
                     
-                    // Fetch entity metadata
+                    // Try to fetch entity metadata with correct headers
                     const metadataUrl = this.dataverseConfig.baseUrl + `$metadata#EntityDefinitions('${entityName}')`;
                     console.log('🔗 Metadata URL:', metadataUrl);
                     
                     const response = await fetch(metadataUrl, {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': `Bearer ${accessToken}`,
+                            'Accept': 'application/xml, application/json',
+                            'OData-MaxVersion': '4.0',
+                            'OData-Version': '4.0'
+                        }
+                    });
+                    
+                    if (response.ok) {
+                        const contentType = response.headers.get('content-type');
+                        console.log('📄 Response content type:', contentType);
+                        
+                        if (contentType && contentType.includes('application/json')) {
+                            const metadata = await response.json();
+                            console.log('✅ Entity metadata (JSON):', metadata);
+                            
+                            // Log available properties
+                            if (metadata && metadata.Properties) {
+                                console.log('📋 Available properties:');
+                                metadata.Properties.forEach(prop => {
+                                    console.log(`  - ${prop.Name} (${prop.Type})`);
+                                });
+                            }
+                            
+                            return metadata;
+                        } else {
+                            // Handle XML response
+                            const metadataXml = await response.text();
+                            console.log('✅ Entity metadata (XML):', metadataXml);
+                            
+                            // Try to extract field names from XML
+                            const fieldMatches = metadataXml.match(/<Property Name="([^"]+)"/g);
+                            if (fieldMatches) {
+                                console.log('📋 Available fields from XML:');
+                                fieldMatches.forEach(match => {
+                                    const fieldName = match.match(/Name="([^"]+)"/)[1];
+                                    console.log(`  - ${fieldName}`);
+                                });
+                            }
+                            
+                            return metadataXml;
+                        }
+                    } else {
+                        console.error('❌ Failed to fetch metadata:', response.status);
+                        return null;
+                    }
+                    
+                } catch (error) {
+                    console.error('❌ Error fetching metadata:', error);
+                    return null;
+                }
+            }
+            
+            async fetchSampleRecord() {
+                console.log('🔍 Fetching sample record to see field structure...');
+                
+                if (!this.dataverseConfig) {
+                    console.log('❌ Dataverse not configured');
+                    return null;
+                }
+                
+                try {
+                    // Get access token
+                    const tokenRequest = {
+                        scopes: ['https://flyktningportalenutvikling.crm4.dynamics.com/.default'],
+                        account: this.currentUser?.account
+                    };
+                    
+                    const tokenResponse = await this.msalInstance.acquireTokenSilent(tokenRequest);
+                    const accessToken = tokenResponse.accessToken;
+                    
+                    // Fetch first record to see field structure
+                    const response = await fetch(this.dataverseConfig.baseUrl + 'socio_deltakelses?$top=1', {
                         method: 'GET',
                         headers: {
                             'Authorization': `Bearer ${accessToken}`,
@@ -1181,25 +1261,25 @@
                     });
                     
                     if (response.ok) {
-                        const metadata = await response.json();
-                        console.log('✅ Entity metadata:', metadata);
+                        const data = await response.json();
+                        console.log('✅ Sample record structure:', data);
                         
-                        // Log available properties
-                        if (metadata && metadata.Properties) {
-                            console.log('📋 Available properties:');
-                            metadata.Properties.forEach(prop => {
-                                console.log(`  - ${prop.Name} (${prop.Type})`);
+                        if (data.value && data.value.length > 0) {
+                            const sampleRecord = data.value[0];
+                            console.log('📋 Available fields in sample record:');
+                            Object.keys(sampleRecord).forEach(field => {
+                                console.log(`  - ${field}: ${typeof sampleRecord[field]} = ${sampleRecord[field]}`);
                             });
                         }
                         
-                        return metadata;
+                        return data;
                     } else {
-                        console.error('❌ Failed to fetch metadata:', response.status);
+                        console.error('❌ Failed to fetch sample record:', response.status);
                         return null;
                     }
                     
                 } catch (error) {
-                    console.error('❌ Error fetching metadata:', error);
+                    console.error('❌ Error fetching sample record:', error);
                     return null;
                 }
             }
