@@ -8,14 +8,13 @@ const CONFIG = {
         redirectUri: window.location.origin,
         postLogoutRedirectUri: window.location.origin,
         scopes: [
-            'User.Read',
-            'User.ReadBasic.All'
+            'https://flyktningportalenutvikling.crm4.dynamics.com/.default'
         ]
     },
 
     // Dataverse Configuration
     dataverse: {
-        instanceUrl: 'https://smittevaksine2022utvikling.crm4.dynamics.com/',
+        instanceUrl: 'https://flyktningportalenutvikling.crm4.dynamics.com/',
         environmentId: '43a8a53e-4c71-e32a-b1f1-4b37a215c056',
         apiVersion: '9.2',
         entities: {
@@ -69,7 +68,7 @@ const CONFIG = {
     // API Endpoints
     endpoints: {
         dataverse: {
-            base: 'https://smittevaksine2022utvikling.crm4.dynamics.com/api/data/v9.2/',
+            base: 'https://flyktningportalenutvikling.crm4.dynamics.com/api/data/v9.2/',
             user: 'socio_bruker',
             attendance: 'socio_deltakelse'
         }

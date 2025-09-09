@@ -278,7 +278,7 @@
                 try {
                     // Real Dataverse configuration from CONFIG
                     this.dataverseConfig = {
-                        baseUrl: 'https://smittevaksine2022utvikling.crm4.dynamics.com/api/data/v9.2/',
+                        baseUrl: 'https://flyktningportalenutvikling.crm4.dynamics.com/api/data/v9.2/',
                         apiVersion: '9.2',
                         entities: {
                             user: 'new_bruker',
@@ -442,7 +442,7 @@
                         
                         // Login with popup - use Dataverse scope
                         const loginRequest = {
-                            scopes: ['https://smittevaksine2022utvikling.crm4.dynamics.com/.default'],
+                            scopes: ['https://flyktningportalenutvikling.crm4.dynamics.com/.default'],
                             prompt: 'select_account'
                         };
                         
@@ -506,7 +506,7 @@
                     try {
                         // Get access token for Dataverse
                         const tokenRequest = {
-                            scopes: ['https://smittevaksine2022utvikling.crm4.dynamics.com/.default'],
+                            scopes: ['https://flyktningportalenutvikling.crm4.dynamics.com/.default'],
                             account: this.currentUser?.account
                         };
                         
@@ -609,7 +609,7 @@
                     
                     // Get access token
                     const tokenRequest = {
-                        scopes: ['https://smittevaksine2022utvikling.crm4.dynamics.com/.default'],
+                        scopes: ['https://flyktningportalenutvikling.crm4.dynamics.com/.default'],
                         account: this.currentUser?.account
                     };
                     
