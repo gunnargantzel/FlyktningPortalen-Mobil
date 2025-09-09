@@ -846,18 +846,8 @@
                     // We'll need to check the actual field names from Dataverse metadata
                     console.log('🔍 Sending minimal payload to test field names:', payload);
                     
-                    // Try to get entity metadata to see available fields
-                    try {
-                        await this.getEntityMetadata('socio_deltakelse');
-                    } catch (metadataError) {
-                        console.log('⚠️ Could not fetch metadata:', metadataError);
-                        // Try alternative approach - fetch existing records to see field structure
-                        try {
-                            await this.fetchSampleRecord();
-                        } catch (sampleError) {
-                            console.log('⚠️ Could not fetch sample record:', sampleError);
-                        }
-                    }
+                    // Skip metadata fetching for now and try to create record directly
+                    console.log('🔍 Skipping metadata fetch, trying direct record creation...');
                     
                     // Remove null/empty values to avoid issues
                     Object.keys(payload).forEach(key => {
@@ -919,8 +909,21 @@
                     });
                     
                     if (response.ok) {
-                        const result = await response.json();
-                        console.log('✅ Attendance created successfully:', result);
+                        // Check if response has content before parsing
+                        const responseText = await response.text();
+                        console.log('📄 Response text:', responseText);
+                        
+                        if (responseText.trim()) {
+                            try {
+                                const result = JSON.parse(responseText);
+                                console.log('✅ Attendance created successfully:', result);
+                            } catch (parseError) {
+                                console.log('✅ Attendance created successfully (non-JSON response)');
+                            }
+                        } else {
+                            console.log('✅ Attendance created successfully (empty response)');
+                        }
+                        
                         alert('Deltagelse registrert!');
                         this.showScreen('main-screen');
                         document.getElementById('attendance-form').reset();
@@ -993,9 +996,20 @@
                     });
                     
                     if (response.ok) {
-                        const data = await response.json();
-                        console.log('✅ Attendance records fetched:', data);
-                        return data.value || [];
+                        const responseText = await response.text();
+                        if (responseText.trim()) {
+                            try {
+                                const data = JSON.parse(responseText);
+                                console.log('✅ Attendance records fetched:', data);
+                                return data.value || [];
+                            } catch (parseError) {
+                                console.error('❌ Failed to parse attendance records:', parseError);
+                                return [];
+                            }
+                        } else {
+                            console.log('✅ No attendance records found (empty response)');
+                            return [];
+                        }
                     } else {
                         console.error('❌ Failed to fetch attendance records:', response.status);
                         return [];
@@ -1261,18 +1275,29 @@
                     });
                     
                     if (response.ok) {
-                        const data = await response.json();
-                        console.log('✅ Sample record structure:', data);
-                        
-                        if (data.value && data.value.length > 0) {
-                            const sampleRecord = data.value[0];
-                            console.log('📋 Available fields in sample record:');
-                            Object.keys(sampleRecord).forEach(field => {
-                                console.log(`  - ${field}: ${typeof sampleRecord[field]} = ${sampleRecord[field]}`);
-                            });
+                        const responseText = await response.text();
+                        if (responseText.trim()) {
+                            try {
+                                const data = JSON.parse(responseText);
+                                console.log('✅ Sample record structure:', data);
+                                
+                                if (data.value && data.value.length > 0) {
+                                    const sampleRecord = data.value[0];
+                                    console.log('📋 Available fields in sample record:');
+                                    Object.keys(sampleRecord).forEach(field => {
+                                        console.log(`  - ${field}: ${typeof sampleRecord[field]} = ${sampleRecord[field]}`);
+                                    });
+                                }
+                                
+                                return data;
+                            } catch (parseError) {
+                                console.error('❌ Failed to parse sample record:', parseError);
+                                return null;
+                            }
+                        } else {
+                            console.log('✅ No sample records found (empty response)');
+                            return null;
                         }
-                        
-                        return data;
                     } else {
                         console.error('❌ Failed to fetch sample record:', response.status);
                         return null;
