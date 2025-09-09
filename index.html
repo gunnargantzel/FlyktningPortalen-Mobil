@@ -832,13 +832,13 @@
                         durationHours = diffMs / (1000 * 60 * 60);
                     }
                     
-                    // Prepare Dataverse payload with only known working fields
-                    // Note: Only sending fields that we know exist in Dataverse
+                    // Prepare Dataverse payload with correct field names
                     const payload = {
-                        'socio_id': socio_id,
                         'socio_deltagelse_fra': attendanceData.socio_dato + 'T' + attendanceData.socio_fra_klokke + ':00',
                         'socio_deltagelse_til': attendanceData.socio_dato + 'T' + attendanceData.socio_til_klokke + ':00',
                         'socio_beskrivelse': attendanceData.socio_beskrivelse || null,
+                        'socio_registeringstatus': 1, // Default to "Registrert" (value 1)
+                        'socio_typedeltagelse': attendanceData.socio_type,
                         'socio_varighet': durationHours
                     };
                     
@@ -1061,7 +1061,7 @@
                     4: 'Permisjon',
                     5: 'Syk'
                 };
-                const typeName = typeNames[record.socio_type] || 'Ukjent';
+                const typeName = typeNames[record.socio_typedeltagelse] || 'Ukjent';
                 
                 // Get status name
                 const statusNames = {
@@ -1069,12 +1069,12 @@
                     2: 'Godkjent',
                     3: 'Avslått'
                 };
-                const statusName = statusNames[record.socio_status] || 'Ukjent';
-                const statusClass = record.socio_status === 2 ? 'status-approved' : 
-                                  record.socio_status === 3 ? 'status-rejected' : 'status-registered';
+                const statusName = statusNames[record.socio_registeringstatus] || 'Ukjent';
+                const statusClass = record.socio_registeringstatus === 2 ? 'status-approved' : 
+                                  record.socio_registeringstatus === 3 ? 'status-rejected' : 'status-registered';
                 
                 // Check if record can be edited
-                const canEdit = record.socio_status === 1; // Only "Registrert" can be edited
+                const canEdit = record.socio_registeringstatus === 1; // Only "Registrert" can be edited
                 
                 div.innerHTML = `
                     <div class="record-header">
@@ -1122,7 +1122,7 @@
                     document.getElementById('edit_socio_til_klokke').value = toDate.toTimeString().slice(0, 5);
                 }
                 
-                document.getElementById('edit_socio_type').value = record.socio_type || '';
+                document.getElementById('edit_socio_type').value = record.socio_typedeltagelse || '';
                 document.getElementById('edit_socio_beskrivelse').value = record.socio_beskrivelse || '';
                 
                 // Show status
@@ -1131,11 +1131,11 @@
                     2: 'Godkjent', 
                     3: 'Avslått'
                 };
-                const statusName = statusNames[record.socio_status] || 'Ukjent';
+                const statusName = statusNames[record.socio_registeringstatus] || 'Ukjent';
                 document.getElementById('edit_socio_status_display').textContent = statusName;
                 
                 // Check if can edit
-                const canEdit = record.socio_status === 1;
+                const canEdit = record.socio_registeringstatus === 1;
                 const warningDiv = document.getElementById('edit-status-warning');
                 const form = document.getElementById('edit-attendance-form');
                 
@@ -1343,11 +1343,12 @@
                     durationHours = diffMs / (1000 * 60 * 60);
                 }
                 
-                // Prepare Dataverse payload for update (minimal fields)
+                // Prepare Dataverse payload for update with correct field names
                 const payload = {
                     'socio_deltagelse_fra': attendanceData.socio_dato + 'T' + attendanceData.socio_fra_klokke + ':00',
                     'socio_deltagelse_til': attendanceData.socio_dato + 'T' + attendanceData.socio_til_klokke + ':00',
                     'socio_beskrivelse': attendanceData.socio_beskrivelse || null,
+                    'socio_typedeltagelse': attendanceData.socio_type,
                     'socio_varighet': durationHours
                 };
                 
