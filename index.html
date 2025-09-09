@@ -104,7 +104,7 @@
                 <div class="form-group duration-group">
                     <label for="socio_varighet" class="pkt-txt-16-bold">Varighet</label>
                     <input type="text" id="socio_varighet" name="socio_varighet" class="pkt-input" readonly placeholder="Auto">
-                </div>
+                    </div>
                 
                 <div class="form-group">
                     <label for="socio_type" class="pkt-txt-16-bold">Type *</label>
@@ -186,7 +186,7 @@
                 <div class="form-group duration-group">
                     <label for="edit_socio_varighet" class="pkt-txt-16-bold">Varighet</label>
                     <input type="text" id="edit_socio_varighet" name="socio_varighet" class="pkt-input" readonly placeholder="Auto">
-                </div>
+        </div>
                 
                 <div class="form-group">
                     <label for="edit_socio_type" class="pkt-txt-16-bold">Type *</label>
@@ -692,6 +692,9 @@
                             editUpdateButton.textContent = 'Fyll ut alle påkrevde felt';
                         }
                     };
+                    
+                    // Make validateEditForm available as a class method
+                    this.validateEditForm = validateEditForm;
                     
                     editFromTimeInput.addEventListener('change', calculateEditDuration);
                     editToTimeInput.addEventListener('change', calculateEditDuration);
@@ -1272,6 +1275,9 @@
                     const diffHours = diffMs / (1000 * 60 * 60);
                     document.getElementById('edit_socio_varighet').value = `${diffHours.toFixed(1)} timer`;
                 }
+                
+                // Run validation after populating the form
+                this.validateEditForm();
                 
                 this.showScreen('edit-attendance-screen');
             }
