@@ -376,10 +376,11 @@
             showScreen(screenId) {
                 console.log('📱 Showing screen:', screenId);
                 
-                // Hide all screens with multiple methods
-                document.querySelectorAll('.screen').forEach(screen => {
+                // Hide all screens with multiple methods - include loading-screen class
+                document.querySelectorAll('.screen, .loading-screen').forEach(screen => {
                     screen.classList.add('hidden');
                     screen.style.display = 'none';
+                    console.log('🔒 Hiding screen:', screen.id, 'classes:', screen.className);
                 });
                 
                 // Show target screen with multiple methods
@@ -392,6 +393,16 @@
                     console.log('Screen element:', targetScreen);
                     console.log('Screen classes:', targetScreen.className);
                     console.log('Screen style:', targetScreen.style.display);
+                    
+                    // Extra check: Make sure loading screen is definitely hidden
+                    if (screenId !== 'loading-screen') {
+                        const loadingScreen = document.getElementById('loading-screen');
+                        if (loadingScreen) {
+                            loadingScreen.classList.add('hidden');
+                            loadingScreen.style.display = 'none';
+                            console.log('🔒 Extra: Loading screen hidden');
+                        }
+                    }
                 } else {
                     console.error('❌ Screen not found:', screenId);
                 }
