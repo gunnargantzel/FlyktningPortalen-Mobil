@@ -120,11 +120,11 @@
                     <label for="socio_type" class="pkt-txt-16-bold">Type *</label>
                     <select id="socio_type" name="socio_type" class="pkt-select" required>
                         <option value="">Velg type...</option>
-                        <option value="1">Tilstede</option>
-                        <option value="2">Fravær</option>
-                        <option value="3">Deltakelse</option>
-                        <option value="4">Permisjon</option>
-                        <option value="5">Syk</option>
+                        <option value="624610000">Tilstede</option>
+                        <option value="624610001">Fravær</option>
+                        <option value="624610002">Deltakelse</option>
+                        <option value="624610003">Permisjon</option>
+                        <option value="624610004">Syk</option>
                     </select>
                 </div>
 
@@ -202,11 +202,11 @@
                     <label for="edit_socio_type" class="pkt-txt-16-bold">Type *</label>
                     <select id="edit_socio_type" name="socio_type" class="pkt-select" required>
                         <option value="">Velg type...</option>
-                        <option value="1">Tilstede</option>
-                        <option value="2">Fravær</option>
-                        <option value="3">Deltakelse</option>
-                        <option value="4">Permisjon</option>
-                        <option value="5">Syk</option>
+                        <option value="624610000">Tilstede</option>
+                        <option value="624610001">Fravær</option>
+                        <option value="624610002">Deltakelse</option>
+                        <option value="624610003">Permisjon</option>
+                        <option value="624610004">Syk</option>
                     </select>
                 </div>
 
@@ -266,24 +266,12 @@
                 // Show login screen after 2 seconds
                 setTimeout(() => {
                     console.log('⏰ Timeout reached, showing login screen...');
-                    this.showScreen('login-screen');
-                    
-                    // Fallback: Force show login screen if still on loading
-                    setTimeout(() => {
-                        const loadingScreen = document.getElementById('loading-screen');
-                        if (loadingScreen && !loadingScreen.classList.contains('hidden')) {
-                            console.log('🚨 Fallback: Force showing login screen');
-                            loadingScreen.classList.add('hidden');
-                            loadingScreen.style.display = 'none';
-                            const loginScreen = document.getElementById('login-screen');
-                            if (loginScreen) {
-                                loginScreen.classList.remove('hidden');
-                                loginScreen.style.display = 'flex';
-                                console.log('🚨 Fallback: Login screen forced to show');
-                            }
-                        }
-                    }, 1000);
-                }, 2000);
+                    // Only show login if we're still on loading screen
+                    const loadingScreen = document.getElementById('loading-screen');
+                    if (loadingScreen && !loadingScreen.classList.contains('hidden')) {
+                        this.showScreen('login-screen');
+                    }
+                }, 3000);
                 
                 // Set up event listeners
                 this.setupEventListeners();
@@ -314,7 +302,18 @@
                         },
                         cache: {
                             cacheLocation: 'localStorage',
-                            storeAuthStateInCookie: false
+                            storeAuthStateInCookie: true // Enable for iOS Safari
+                        },
+                        system: {
+                            allowNativeBroker: false, // Disable native broker for better iOS compatibility
+                            loggerOptions: {
+                                loggerCallback: (level, message, containsPii) => {
+                                    if (containsPii) return;
+                                    console.log(`MSAL ${level}: ${message}`);
+                                },
+                                piiLoggingEnabled: false,
+                                logLevel: 'Info'
+                            }
                         }
                     };
                     
@@ -838,7 +837,7 @@
                         'socio_deltagelse_til': attendanceData.socio_dato + 'T' + attendanceData.socio_til_klokke + ':00',
                         'socio_beskrivelse': attendanceData.socio_beskrivelse || null,
                         'socio_registeringstatus': 624610000, // Default to "Registrert" (option set value)
-                        'socio_typedeltagelse': attendanceData.socio_type,
+                        'socio_typedeltagelse': parseInt(attendanceData.socio_type),
                         'socio_varighet': durationHours
                     };
                     
@@ -1053,13 +1052,13 @@
                 const fromTimeStr = fromDate ? fromDate.toLocaleTimeString('nb-NO', { hour: '2-digit', minute: '2-digit' }) : 'Ukjent';
                 const toTimeStr = toDate ? toDate.toLocaleTimeString('nb-NO', { hour: '2-digit', minute: '2-digit' }) : 'Ukjent';
                 
-                // Get type name
+                // Get type name using correct option set values
                 const typeNames = {
-                    1: 'Tilstede',
-                    2: 'Fravær', 
-                    3: 'Deltakelse',
-                    4: 'Permisjon',
-                    5: 'Syk'
+                    624610000: 'Tilstede',
+                    624610001: 'Fravær', 
+                    624610002: 'Deltakelse',
+                    624610003: 'Permisjon',
+                    624610004: 'Syk'
                 };
                 const typeName = typeNames[record.socio_typedeltagelse] || 'Ukjent';
                 
@@ -1348,7 +1347,7 @@
                     'socio_deltagelse_fra': attendanceData.socio_dato + 'T' + attendanceData.socio_fra_klokke + ':00',
                     'socio_deltagelse_til': attendanceData.socio_dato + 'T' + attendanceData.socio_til_klokke + ':00',
                     'socio_beskrivelse': attendanceData.socio_beskrivelse || null,
-                    'socio_typedeltagelse': attendanceData.socio_type,
+                    'socio_typedeltagelse': parseInt(attendanceData.socio_type),
                     'socio_varighet': durationHours
                 };
                 
