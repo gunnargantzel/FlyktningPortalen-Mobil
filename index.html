@@ -832,17 +832,26 @@
                         durationHours = diffMs / (1000 * 60 * 60);
                     }
                     
-                    // Prepare Dataverse payload with correct field names
-                    // Note: Using the actual field names from Dataverse metadata
+                    // Prepare Dataverse payload with only known working fields
+                    // Note: Only sending fields that we know exist in Dataverse
                     const payload = {
                         'socio_id': socio_id,
                         'socio_deltagelse_fra': attendanceData.socio_dato + 'T' + attendanceData.socio_fra_klokke + ':00',
                         'socio_deltagelse_til': attendanceData.socio_dato + 'T' + attendanceData.socio_til_klokke + ':00',
-                        'socio_type': attendanceData.socio_type,
-                        'socio_status': 1, // Default to "Registrert" (value 1)
                         'socio_beskrivelse': attendanceData.socio_beskrivelse || null,
                         'socio_varighet': durationHours
                     };
+                    
+                    // Add type and status only if they exist in Dataverse
+                    // We'll need to check the actual field names from Dataverse metadata
+                    console.log('🔍 Sending minimal payload to test field names:', payload);
+                    
+                    // Try to get entity metadata to see available fields
+                    try {
+                        await this.getEntityMetadata('socio_deltakelse');
+                    } catch (metadataError) {
+                        console.log('⚠️ Could not fetch metadata:', metadataError);
+                    }
                     
                     // Remove null/empty values to avoid issues
                     Object.keys(payload).forEach(key => {
@@ -1139,6 +1148,62 @@
                 this.showScreen('edit-attendance-screen');
             }
             
+            async getEntityMetadata(entityName) {
+                console.log(`🔍 Fetching metadata for entity: ${entityName}`);
+                
+                if (!this.dataverseConfig) {
+                    console.log('❌ Dataverse not configured');
+                    return null;
+                }
+                
+                try {
+                    // Get access token
+                    const tokenRequest = {
+                        scopes: ['https://flyktningportalenutvikling.crm4.dynamics.com/.default'],
+                        account: this.currentUser?.account
+                    };
+                    
+                    const tokenResponse = await this.msalInstance.acquireTokenSilent(tokenRequest);
+                    const accessToken = tokenResponse.accessToken;
+                    
+                    // Fetch entity metadata
+                    const metadataUrl = this.dataverseConfig.baseUrl + `$metadata#EntityDefinitions('${entityName}')`;
+                    console.log('🔗 Metadata URL:', metadataUrl);
+                    
+                    const response = await fetch(metadataUrl, {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': `Bearer ${accessToken}`,
+                            'Accept': 'application/json',
+                            'OData-MaxVersion': '4.0',
+                            'OData-Version': '4.0'
+                        }
+                    });
+                    
+                    if (response.ok) {
+                        const metadata = await response.json();
+                        console.log('✅ Entity metadata:', metadata);
+                        
+                        // Log available properties
+                        if (metadata && metadata.Properties) {
+                            console.log('📋 Available properties:');
+                            metadata.Properties.forEach(prop => {
+                                console.log(`  - ${prop.Name} (${prop.Type})`);
+                            });
+                        }
+                        
+                        return metadata;
+                    } else {
+                        console.error('❌ Failed to fetch metadata:', response.status);
+                        return null;
+                    }
+                    
+                } catch (error) {
+                    console.error('❌ Error fetching metadata:', error);
+                    return null;
+                }
+            }
+            
             async handleEditAttendanceSubmit() {
                 console.log('💾 Handling edit attendance form submission...');
                 
@@ -1173,14 +1238,15 @@
                     durationHours = diffMs / (1000 * 60 * 60);
                 }
                 
-                // Prepare Dataverse payload for update
+                // Prepare Dataverse payload for update (minimal fields)
                 const payload = {
                     'socio_deltagelse_fra': attendanceData.socio_dato + 'T' + attendanceData.socio_fra_klokke + ':00',
                     'socio_deltagelse_til': attendanceData.socio_dato + 'T' + attendanceData.socio_til_klokke + ':00',
-                    'socio_type': attendanceData.socio_type,
                     'socio_beskrivelse': attendanceData.socio_beskrivelse || null,
                     'socio_varighet': durationHours
                 };
+                
+                console.log('🔍 Sending minimal update payload:', payload);
                 
                 // Remove null/empty values
                 Object.keys(payload).forEach(key => {
