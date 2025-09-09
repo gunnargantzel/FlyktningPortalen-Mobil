@@ -75,9 +75,9 @@
                     <button id="register-attendance-btn" class="pkt-btn pkt-btn--primary">Start</button>
                 </div>
                 <div class="menu-card pkt-section pkt-section--white">
-                    <h3 class="pkt-txt-20-bold">Se oversikt</h3>
-                    <p class="pkt-txt-16">Se din fraværsoversikt</p>
-                    <button class="pkt-btn pkt-btn--secondary">Åpne</button>
+                    <h3 class="pkt-txt-20-bold">Mine registreringer</h3>
+                    <p class="pkt-txt-16">Se og rediger dine registreringer</p>
+                    <button id="view-attendance-list-btn" class="pkt-btn pkt-btn--secondary">Åpne</button>
                 </div>
                 <div class="menu-card pkt-section pkt-section--white">
                     <h3 class="pkt-txt-20-bold">Test Dataverse</h3>
@@ -140,6 +140,92 @@
                 <div class="form-actions">
                     <button type="button" id="cancel-form-btn" class="pkt-btn pkt-btn--secondary">Avbryt</button>
                     <button type="submit" id="save-attendance-btn" class="pkt-btn pkt-btn--primary">Lagre</button>
+            </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Attendance List Screen -->
+    <div id="attendance-list-screen" class="screen hidden">
+        <div class="screen-header pkt-section pkt-section--white">
+            <button id="back-to-main-from-list-btn" class="pkt-btn pkt-btn--secondary">← Tilbake</button>
+            <h1 class="pkt-txt-28-bold">Mine registreringer</h1>
+        </div>
+        <div class="screen-content pkt-section pkt-section--grey">
+            <div id="attendance-list-container" class="pkt-section pkt-section--white">
+                <div id="loading-attendance-list" class="loading-message">
+                    <p class="pkt-txt-16">Laster registreringer...</p>
+                </div>
+                <div id="attendance-list" class="attendance-list" style="display: none;">
+                    <!-- Attendance records will be populated here -->
+                </div>
+                <div id="no-attendance-message" class="no-data-message" style="display: none;">
+                    <p class="pkt-txt-16">Ingen registreringer funnet.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Attendance Screen -->
+    <div id="edit-attendance-screen" class="screen hidden">
+        <div class="screen-header pkt-section pkt-section--white">
+            <button id="back-to-list-btn" class="pkt-btn pkt-btn--secondary">← Tilbake</button>
+            <h1 class="pkt-txt-28-bold">Rediger registrering</h1>
+        </div>
+        <div class="screen-content pkt-section pkt-section--grey">
+            <form id="edit-attendance-form" class="form pkt-section pkt-section--white">
+                <div id="edit-status-warning" class="status-warning" style="display: none;">
+                    <p class="pkt-txt-16-bold">⚠️ Denne registreringen kan ikke endres fordi den er godkjent eller avslått.</p>
+                </div>
+                
+                <div class="form-group">
+                    <label for="edit_socio_dato" class="pkt-txt-16-bold">Dato *</label>
+                    <input type="date" id="edit_socio_dato" name="socio_dato" class="pkt-input" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="edit_socio_fra_klokke" class="pkt-txt-16-bold">Fra klokke *</label>
+                    <input type="time" id="edit_socio_fra_klokke" name="socio_fra_klokke" class="pkt-input" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="edit_socio_til_klokke" class="pkt-txt-16-bold">Til klokke *</label>
+                    <input type="time" id="edit_socio_til_klokke" name="socio_til_klokke" class="pkt-input" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="edit_socio_varighet" class="pkt-txt-16-bold">Varighet (automatisk beregnet)</label>
+                    <input type="text" id="edit_socio_varighet" name="socio_varighet" class="pkt-input" readonly>
+                </div>
+                
+                <div class="form-group">
+                    <label for="edit_socio_type" class="pkt-txt-16-bold">Type *</label>
+                    <select id="edit_socio_type" name="socio_type" class="pkt-select" required>
+                        <option value="">Velg type...</option>
+                        <option value="1">Tilstede</option>
+                        <option value="2">Fravær</option>
+                        <option value="3">Deltakelse</option>
+                        <option value="4">Permisjon</option>
+                        <option value="5">Syk</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="edit_socio_beskrivelse" class="pkt-txt-16-bold">Beskrivelse</label>
+                    <textarea id="edit_socio_beskrivelse" name="socio_beskrivelse" 
+                              class="pkt-textarea"
+                              placeholder="Beskriv deltagelsen..." 
+                              maxlength="1000" rows="3"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label class="pkt-txt-16-bold">Status</label>
+                    <div id="edit_socio_status_display" class="status-display pkt-txt-16"></div>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="button" id="cancel-edit-btn" class="pkt-btn pkt-btn--secondary">Avbryt</button>
+                    <button type="submit" id="update-attendance-btn" class="pkt-btn pkt-btn--primary" disabled>Oppdater</button>
                 </div>
             </form>
         </div>
@@ -454,6 +540,117 @@
                     validateForm();
                 }
                 
+                // View attendance list button
+                const viewAttendanceListBtn = document.getElementById('view-attendance-list-btn');
+                if (viewAttendanceListBtn) {
+                    viewAttendanceListBtn.addEventListener('click', () => {
+                        console.log('📋 View attendance list button clicked');
+                        this.showAttendanceList();
+                    });
+                }
+                
+                // Back to main from list button
+                const backToMainFromListBtn = document.getElementById('back-to-main-from-list-btn');
+                if (backToMainFromListBtn) {
+                    backToMainFromListBtn.addEventListener('click', () => {
+                        console.log('← Back to main from list button clicked');
+                        this.showScreen('main-screen');
+                    });
+                }
+                
+                // Back to list button (from edit screen)
+                const backToListBtn = document.getElementById('back-to-list-btn');
+                if (backToListBtn) {
+                    backToListBtn.addEventListener('click', () => {
+                        console.log('← Back to list button clicked');
+                        this.showScreen('attendance-list-screen');
+                    });
+                }
+                
+                // Cancel edit button
+                const cancelEditBtn = document.getElementById('cancel-edit-btn');
+                if (cancelEditBtn) {
+                    cancelEditBtn.addEventListener('click', () => {
+                        console.log('❌ Cancel edit button clicked');
+                        this.showScreen('attendance-list-screen');
+                    });
+                }
+                
+                // Edit attendance form submit
+                const editAttendanceForm = document.getElementById('edit-attendance-form');
+                if (editAttendanceForm) {
+                    editAttendanceForm.addEventListener('submit', async (e) => {
+                        e.preventDefault();
+                        console.log('💾 Edit attendance form submitted');
+                        await this.handleEditAttendanceSubmit();
+                    });
+                }
+                
+                // Auto-calculate duration for edit form
+                const editFromTimeInput = document.getElementById('edit_socio_fra_klokke');
+                const editToTimeInput = document.getElementById('edit_socio_til_klokke');
+                const editDurationInput = document.getElementById('edit_socio_varighet');
+                const editUpdateButton = document.getElementById('update-attendance-btn');
+                
+                if (editFromTimeInput && editToTimeInput && editDurationInput && editUpdateButton) {
+                    const calculateEditDuration = () => {
+                        const fromTime = editFromTimeInput.value;
+                        const toTime = editToTimeInput.value;
+                        
+                        if (fromTime && toTime) {
+                            const from = new Date(`2000-01-01T${fromTime}`);
+                            const to = new Date(`2000-01-01T${toTime}`);
+                            const diffMs = to - from;
+                            
+                            if (diffMs > 0) {
+                                const diffHours = diffMs / (1000 * 60 * 60);
+                                editDurationInput.value = `${diffHours.toFixed(1)} timer`;
+                            } else {
+                                editDurationInput.value = 'Ugyldig tidsperiode';
+                            }
+                        } else {
+                            editDurationInput.value = '';
+                        }
+                        
+                        // Validate edit form and enable/disable update button
+                        validateEditForm();
+                    };
+                    
+                    const validateEditForm = () => {
+                        const requiredFields = [
+                            document.getElementById('edit_socio_dato'),
+                            document.getElementById('edit_socio_fra_klokke'),
+                            document.getElementById('edit_socio_til_klokke'),
+                            document.getElementById('edit_socio_type')
+                        ];
+                        
+                        const allFieldsFilled = requiredFields.every(field => field && field.value.trim() !== '');
+                        const validTimeRange = editFromTimeInput.value && editToTimeInput.value && 
+                                             new Date(`2000-01-01T${editToTimeInput.value}`) > new Date(`2000-01-01T${editFromTimeInput.value}`);
+                        
+                        if (allFieldsFilled && validTimeRange) {
+                            editUpdateButton.disabled = false;
+                            editUpdateButton.textContent = 'Oppdater';
+                        } else {
+                            editUpdateButton.disabled = true;
+                            editUpdateButton.textContent = 'Fyll ut alle påkrevde felt';
+                        }
+                    };
+                    
+                    editFromTimeInput.addEventListener('change', calculateEditDuration);
+                    editToTimeInput.addEventListener('change', calculateEditDuration);
+                    
+                    requiredFields.forEach(field => {
+                        if (field) {
+                            field.addEventListener('change', validateEditForm);
+                            field.addEventListener('input', validateEditForm);
+                        }
+                    });
+                    
+                    // Initial validation
+                    validateEditForm();
+                }
+                
                 console.log('✅ Event listeners set up');
             }
             
@@ -721,6 +918,315 @@
                 } catch (error) {
                     console.error('❌ Attendance submission error:', error);
                     alert('En feil oppstod ved registrering. Prøv igjen.');
+                }
+            }
+            
+            async showAttendanceList() {
+                console.log('📋 Showing attendance list...');
+                this.showScreen('attendance-list-screen');
+                
+                // Show loading state
+                document.getElementById('loading-attendance-list').style.display = 'block';
+                document.getElementById('attendance-list').style.display = 'none';
+                document.getElementById('no-attendance-message').style.display = 'none';
+                
+                try {
+                    // Get attendance records from Dataverse
+                    const records = await this.fetchAttendanceRecords();
+                    
+                    if (records && records.length > 0) {
+                        this.displayAttendanceList(records);
+                    } else {
+                        document.getElementById('loading-attendance-list').style.display = 'none';
+                        document.getElementById('no-attendance-message').style.display = 'block';
+                    }
+                } catch (error) {
+                    console.error('❌ Error fetching attendance records:', error);
+                    document.getElementById('loading-attendance-list').style.display = 'none';
+                    document.getElementById('no-attendance-message').style.display = 'block';
+                    alert('Kunne ikke laste registreringer. Prøv igjen.');
+                }
+            }
+            
+            async fetchAttendanceRecords() {
+                console.log('🔍 Fetching attendance records...');
+                
+                if (!this.dataverseConfig) {
+                    console.log('❌ Dataverse not configured');
+                    return [];
+                }
+                
+                try {
+                    // Get access token
+                    const tokenRequest = {
+                        scopes: ['https://flyktningportalenutvikling.crm4.dynamics.com/.default'],
+                        account: this.currentUser?.account
+                    };
+                    
+                    const tokenResponse = await this.msalInstance.acquireTokenSilent(tokenRequest);
+                    const accessToken = tokenResponse.accessToken;
+                    
+                    // Fetch records
+                    const response = await fetch(this.dataverseConfig.baseUrl + 'socio_deltakelses', {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': `Bearer ${accessToken}`,
+                            'Accept': 'application/json',
+                            'OData-MaxVersion': '4.0',
+                            'OData-Version': '4.0'
+                        }
+                    });
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        console.log('✅ Attendance records fetched:', data);
+                        return data.value || [];
+                    } else {
+                        console.error('❌ Failed to fetch attendance records:', response.status);
+                        return [];
+                    }
+                    
+                } catch (error) {
+                    console.error('❌ Error fetching attendance records:', error);
+                    return [];
+                }
+            }
+            
+            displayAttendanceList(records) {
+                console.log('📋 Displaying attendance list...');
+                
+                const listContainer = document.getElementById('attendance-list');
+                listContainer.innerHTML = '';
+                
+                records.forEach(record => {
+                    const recordElement = this.createAttendanceRecordElement(record);
+                    listContainer.appendChild(recordElement);
+                });
+                
+                document.getElementById('loading-attendance-list').style.display = 'none';
+                document.getElementById('attendance-list').style.display = 'block';
+            }
+            
+            createAttendanceRecordElement(record) {
+                const div = document.createElement('div');
+                div.className = 'attendance-record pkt-section pkt-section--white';
+                div.style.marginBottom = '10px';
+                div.style.padding = '15px';
+                div.style.border = '1px solid #e1dfdd';
+                div.style.borderRadius = '4px';
+                
+                // Parse dates
+                const fromDate = record.socio_deltagelse_fra ? new Date(record.socio_deltagelse_fra) : null;
+                const toDate = record.socio_deltagelse_til ? new Date(record.socio_deltagelse_til) : null;
+                
+                // Format date and time
+                const dateStr = fromDate ? fromDate.toLocaleDateString('nb-NO') : 'Ukjent dato';
+                const fromTimeStr = fromDate ? fromDate.toLocaleTimeString('nb-NO', { hour: '2-digit', minute: '2-digit' }) : 'Ukjent';
+                const toTimeStr = toDate ? toDate.toLocaleTimeString('nb-NO', { hour: '2-digit', minute: '2-digit' }) : 'Ukjent';
+                
+                // Get type name
+                const typeNames = {
+                    1: 'Tilstede',
+                    2: 'Fravær', 
+                    3: 'Deltakelse',
+                    4: 'Permisjon',
+                    5: 'Syk'
+                };
+                const typeName = typeNames[record.socio_type] || 'Ukjent';
+                
+                // Get status name
+                const statusNames = {
+                    1: 'Registrert',
+                    2: 'Godkjent',
+                    3: 'Avslått'
+                };
+                const statusName = statusNames[record.socio_status] || 'Ukjent';
+                const statusClass = record.socio_status === 2 ? 'status-approved' : 
+                                  record.socio_status === 3 ? 'status-rejected' : 'status-registered';
+                
+                // Check if record can be edited
+                const canEdit = record.socio_status === 1; // Only "Registrert" can be edited
+                
+                div.innerHTML = `
+                    <div class="record-header">
+                        <h4 class="pkt-txt-18-bold">${typeName} - ${dateStr}</h4>
+                        <span class="status-badge ${statusClass} pkt-txt-14">${statusName}</span>
+                    </div>
+                    <div class="record-details pkt-txt-16">
+                        <p><strong>Tid:</strong> ${fromTimeStr} - ${toTimeStr}</p>
+                        <p><strong>Varighet:</strong> ${record.socio_varighet ? record.socio_varighet.toFixed(1) + ' timer' : 'Ukjent'}</p>
+                        ${record.socio_beskrivelse ? `<p><strong>Beskrivelse:</strong> ${record.socio_beskrivelse}</p>` : ''}
+                    </div>
+                    <div class="record-actions">
+                        ${canEdit ? 
+                            `<button class="edit-record-btn pkt-btn pkt-btn--secondary" data-record-id="${record.socio_deltakelseid}">Rediger</button>` :
+                            `<span class="pkt-txt-14" style="color: #666;">Kan ikke redigeres (${statusName})</span>`
+                        }
+                    </div>
+                `;
+                
+                // Add edit button event listener
+                if (canEdit) {
+                    const editBtn = div.querySelector('.edit-record-btn');
+                    editBtn.addEventListener('click', () => {
+                        this.editAttendanceRecord(record);
+                    });
+                }
+                
+                return div;
+            }
+            
+            editAttendanceRecord(record) {
+                console.log('✏️ Editing attendance record:', record);
+                
+                // Parse dates
+                const fromDate = record.socio_deltagelse_fra ? new Date(record.socio_deltagelse_fra) : null;
+                const toDate = record.socio_deltagelse_til ? new Date(record.socio_deltagelse_til) : null;
+                
+                // Populate edit form
+                if (fromDate) {
+                    document.getElementById('edit_socio_dato').value = fromDate.toISOString().split('T')[0];
+                    document.getElementById('edit_socio_fra_klokke').value = fromDate.toTimeString().slice(0, 5);
+                }
+                
+                if (toDate) {
+                    document.getElementById('edit_socio_til_klokke').value = toDate.toTimeString().slice(0, 5);
+                }
+                
+                document.getElementById('edit_socio_type').value = record.socio_type || '';
+                document.getElementById('edit_socio_beskrivelse').value = record.socio_beskrivelse || '';
+                
+                // Show status
+                const statusNames = {
+                    1: 'Registrert',
+                    2: 'Godkjent', 
+                    3: 'Avslått'
+                };
+                const statusName = statusNames[record.socio_status] || 'Ukjent';
+                document.getElementById('edit_socio_status_display').textContent = statusName;
+                
+                // Check if can edit
+                const canEdit = record.socio_status === 1;
+                const warningDiv = document.getElementById('edit-status-warning');
+                const form = document.getElementById('edit-attendance-form');
+                
+                if (canEdit) {
+                    warningDiv.style.display = 'none';
+                    form.querySelectorAll('input, select, textarea').forEach(field => {
+                        field.disabled = false;
+                    });
+                } else {
+                    warningDiv.style.display = 'block';
+                    form.querySelectorAll('input, select, textarea').forEach(field => {
+                        field.disabled = true;
+                    });
+                }
+                
+                // Store record ID for update
+                this.currentEditRecordId = record.socio_deltakelseid;
+                
+                // Calculate duration
+                const editFromTimeInput = document.getElementById('edit_socio_fra_klokke');
+                const editToTimeInput = document.getElementById('edit_socio_til_klokke');
+                if (editFromTimeInput.value && editToTimeInput.value) {
+                    const from = new Date(`2000-01-01T${editFromTimeInput.value}`);
+                    const to = new Date(`2000-01-01T${editToTimeInput.value}`);
+                    const diffMs = to - from;
+                    const diffHours = diffMs / (1000 * 60 * 60);
+                    document.getElementById('edit_socio_varighet').value = `${diffHours.toFixed(1)} timer`;
+                }
+                
+                this.showScreen('edit-attendance-screen');
+            }
+            
+            async handleEditAttendanceSubmit() {
+                console.log('💾 Handling edit attendance form submission...');
+                
+                if (!this.currentEditRecordId) {
+                    alert('Ingen registrering valgt for redigering.');
+                    return;
+                }
+                
+                const form = document.getElementById('edit-attendance-form');
+                const formData = new FormData(form);
+                
+                const attendanceData = {
+                    socio_dato: formData.get('socio_dato'),
+                    socio_fra_klokke: formData.get('socio_fra_klokke'),
+                    socio_til_klokke: formData.get('socio_til_klokke'),
+                    socio_type: parseInt(formData.get('socio_type')),
+                    socio_beskrivelse: formData.get('socio_beskrivelse') || ''
+                };
+                
+                // Validate required fields
+                if (!attendanceData.socio_dato || !attendanceData.socio_fra_klokke || !attendanceData.socio_til_klokke || !attendanceData.socio_type) {
+                    alert('Vennligst fyll ut alle påkrevde felt.');
+                    return;
+                }
+                
+                // Calculate duration in hours as a number
+                let durationHours = 0;
+                if (attendanceData.socio_fra_klokke && attendanceData.socio_til_klokke) {
+                    const from = new Date(`2000-01-01T${attendanceData.socio_fra_klokke}`);
+                    const to = new Date(`2000-01-01T${attendanceData.socio_til_klokke}`);
+                    const diffMs = to - from;
+                    durationHours = diffMs / (1000 * 60 * 60);
+                }
+                
+                // Prepare Dataverse payload for update
+                const payload = {
+                    'socio_deltagelse_fra': attendanceData.socio_dato + 'T' + attendanceData.socio_fra_klokke + ':00',
+                    'socio_deltagelse_til': attendanceData.socio_dato + 'T' + attendanceData.socio_til_klokke + ':00',
+                    'socio_type': attendanceData.socio_type,
+                    'socio_beskrivelse': attendanceData.socio_beskrivelse || null,
+                    'socio_varighet': durationHours
+                };
+                
+                // Remove null/empty values
+                Object.keys(payload).forEach(key => {
+                    if (payload[key] === null || payload[key] === undefined || payload[key] === '') {
+                        delete payload[key];
+                    }
+                });
+                
+                console.log('📤 Updating record in Dataverse:', payload);
+                
+                try {
+                    // Get access token
+                    const tokenRequest = {
+                        scopes: ['https://flyktningportalenutvikling.crm4.dynamics.com/.default'],
+                        account: this.currentUser?.account
+                    };
+                    
+                    const tokenResponse = await this.msalInstance.acquireTokenSilent(tokenRequest);
+                    const accessToken = tokenResponse.accessToken;
+                    
+                    // Update record
+                    const response = await fetch(this.dataverseConfig.baseUrl + `socio_deltakelses(${this.currentEditRecordId})`, {
+                        method: 'PATCH',
+                        headers: {
+                            'Authorization': `Bearer ${accessToken}`,
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify(payload)
+                    });
+                    
+                    if (response.ok) {
+                        console.log('✅ Attendance updated successfully');
+                        alert('Registrering oppdatert!');
+                        this.showScreen('attendance-list-screen');
+                        // Refresh the list
+                        this.showAttendanceList();
+                    } else {
+                        const error = await response.text();
+                        console.error('❌ Failed to update attendance:', response.status, error);
+                        alert(`Feil ved oppdatering: ${response.status}`);
+                    }
+                    
+                } catch (error) {
+                    console.error('❌ Attendance update error:', error);
+                    alert('En feil oppstod ved oppdatering. Prøv igjen.');
                 }
             }
         }
