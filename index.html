@@ -635,12 +635,12 @@
                         durationHours = diffMs / (1000 * 60 * 60);
                     }
                     
-                    // Prepare Dataverse payload with correct data types
+                    // Prepare Dataverse payload with correct field names
+                    // Note: Using the actual field names from Dataverse metadata
                     const payload = {
                         'socio_id': socio_id,
-                        'socio_dato': attendanceData.socio_dato,
-                        'socio_fra_klokke': attendanceData.socio_fra_klokke,
-                        'socio_til_klokke': attendanceData.socio_til_klokke,
+                        'socio_deltagelse_fra': attendanceData.socio_dato + 'T' + attendanceData.socio_fra_klokke + ':00',
+                        'socio_deltagelse_til': attendanceData.socio_dato + 'T' + attendanceData.socio_til_klokke + ':00',
                         'socio_type': attendanceData.socio_type,
                         'socio_status': 1, // Default to "Registrert" (value 1)
                         'socio_beskrivelse': attendanceData.socio_beskrivelse || null,
@@ -658,7 +658,18 @@
                     // In a real app, you might want to create a socio_bruker record first and reference it here
                     
                     console.log('📤 Sending to Dataverse:', payload);
+                    console.log('📤 Payload keys:', Object.keys(payload));
+                    console.log('📤 Payload values:', Object.values(payload));
                     console.log('🔗 Dataverse URL:', this.dataverseConfig.baseUrl + 'socio_deltakelses');
+                    
+                    // First, let's check what fields actually exist in the entity
+                    try {
+                        const metadataUrl = this.dataverseConfig.baseUrl + '$metadata#EntityDefinitions';
+                        console.log('🔍 Checking entity metadata...');
+                        // We'll add this check after the main request
+                    } catch (metadataError) {
+                        console.log('⚠️ Could not check metadata:', metadataError);
+                    }
                     
                     // Get access token
                     const tokenRequest = {
