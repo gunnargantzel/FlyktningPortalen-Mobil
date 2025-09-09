@@ -312,6 +312,14 @@
                 return hasUser || hasMSALAccount;
             }
             
+            isMobileDevice() {
+                // Check if device is mobile (iPhone, iPad, Android)
+                const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+                const isMobile = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent);
+                console.log('📱 Mobile device check:', { userAgent, isMobile });
+                return isMobile;
+            }
+            
             async initializeMSAL() {
                 console.log('🔐 Initializing MSAL...');
                 
@@ -352,8 +360,18 @@
                     
                     this.msalInstance = new msal.PublicClientApplication(msalConfig);
                     
-                    // Handle redirect promise
-                    await this.msalInstance.handleRedirectPromise();
+                    // Handle redirect promise (important for mobile devices)
+                    const redirectResponse = await this.msalInstance.handleRedirectPromise();
+                    if (redirectResponse) {
+                        console.log('✅ Redirect login successful:', redirectResponse);
+                        this.currentUser = {
+                            name: redirectResponse.account.name,
+                            email: redirectResponse.account.username,
+                            account: redirectResponse.account
+                        };
+                        this.updateUserInfo();
+                        // Don't show screen here, let the main initialization handle it
+                    }
                     
                     console.log('✅ MSAL initialized successfully with Entra ID');
                 } catch (error) {
@@ -739,27 +757,35 @@
                             return;
                         }
                         
-                        // Login with popup - use Dataverse scope
+                        // Login request with Dataverse scope
                         const loginRequest = {
                             scopes: ['https://flyktningportalenutvikling.crm4.dynamics.com/.default'],
                             prompt: 'select_account'
                         };
                         
-                        console.log('🔄 Starting MSAL login popup...');
-                        const response = await this.msalInstance.loginPopup(loginRequest);
-                        console.log('✅ Entra ID login successful:', response);
-                        
-                        this.currentUser = {
-                            name: response.account.name,
-                            email: response.account.username,
-                            account: response.account
-                        };
-                        
-                        // Update user info immediately after login
-                        this.updateUserInfo();
-                        
-                        // Show main screen only after successful authentication
-                        this.showScreen('main-screen');
+                        // Use redirect for mobile devices, popup for desktop
+                        if (this.isMobileDevice()) {
+                            console.log('📱 Mobile device detected, using redirect login...');
+                            await this.msalInstance.loginRedirect(loginRequest);
+                            // Note: This will redirect the page, so we won't reach the code below
+                            return;
+                        } else {
+                            console.log('🖥️ Desktop device detected, using popup login...');
+                            const response = await this.msalInstance.loginPopup(loginRequest);
+                            console.log('✅ Entra ID login successful:', response);
+                            
+                            this.currentUser = {
+                                name: response.account.name,
+                                email: response.account.username,
+                                account: response.account
+                            };
+                            
+                            // Update user info immediately after login
+                            this.updateUserInfo();
+                            
+                            // Show main screen only after successful authentication
+                            this.showScreen('main-screen');
+                        }
                         
                     } catch (error) {
                         console.error('❌ Entra ID login failed:', error);
@@ -782,8 +808,18 @@
                 if (this.msalInstance && this.currentUser && this.currentUser.account) {
                     try {
                         console.log('Logging out from Entra ID...');
-                        await this.msalInstance.logoutPopup();
-                        console.log('✅ Entra ID logout successful');
+                        
+                        // Use redirect for mobile devices, popup for desktop
+                        if (this.isMobileDevice()) {
+                            console.log('📱 Mobile device detected, using redirect logout...');
+                            await this.msalInstance.logoutRedirect();
+                            // Note: This will redirect the page, so we won't reach the code below
+                            return;
+                        } else {
+                            console.log('🖥️ Desktop device detected, using popup logout...');
+                            await this.msalInstance.logoutPopup();
+                            console.log('✅ Entra ID logout successful');
+                        }
                     } catch (error) {
                         console.error('❌ Entra ID logout failed:', error);
                     }
