@@ -286,11 +286,24 @@
             
             // Bottom Sheet functionality
             showBottomSheet(title, message, onConfirm, onCancel) {
+                console.log('📱 showBottomSheet called with:', { title, message, onConfirm: !!onConfirm, onCancel: !!onCancel });
+                
                 const bottomSheet = document.getElementById('bottom-sheet');
                 const titleEl = document.getElementById('bottom-sheet-title');
                 const messageEl = document.getElementById('bottom-sheet-message');
                 const confirmBtn = document.getElementById('bottom-sheet-confirm');
                 const cancelBtn = document.getElementById('bottom-sheet-cancel');
+                
+                if (!bottomSheet || !titleEl || !messageEl || !confirmBtn || !cancelBtn) {
+                    console.error('❌ Bottom sheet elements not found:', {
+                        bottomSheet: !!bottomSheet,
+                        titleEl: !!titleEl,
+                        messageEl: !!messageEl,
+                        confirmBtn: !!confirmBtn,
+                        cancelBtn: !!cancelBtn
+                    });
+                    return;
+                }
                 
                 titleEl.textContent = title;
                 messageEl.textContent = message;
@@ -303,18 +316,27 @@
                 
                 // Add new event listeners
                 newConfirmBtn.addEventListener('click', () => {
+                    console.log('✅ Bottom sheet confirm button clicked');
                     this.hideBottomSheet();
-                    if (onConfirm) onConfirm();
+                    if (onConfirm) {
+                        console.log('🔄 Calling onConfirm callback...');
+                        onConfirm();
+                    }
                 });
                 
                 newCancelBtn.addEventListener('click', () => {
+                    console.log('❌ Bottom sheet cancel button clicked');
                     this.hideBottomSheet();
-                    if (onCancel) onCancel();
+                    if (onCancel) {
+                        console.log('🔄 Calling onCancel callback...');
+                        onCancel();
+                    }
                 });
                 
                 // Show bottom sheet
                 bottomSheet.classList.remove('hidden');
                 document.body.style.overflow = 'hidden'; // Prevent background scrolling
+                console.log('✅ Bottom sheet shown');
             }
             
             hideBottomSheet() {
@@ -727,6 +749,7 @@
                                 email: accounts[0].username,
                                 account: accounts[0]
                             };
+                            this.updateUserInfo();
                             this.showScreen('main-screen');
                             return;
                         }
@@ -745,6 +768,9 @@
                             email: response.account.username,
                             account: response.account
                         };
+                        
+                        // Update user info immediately after login
+                        this.updateUserInfo();
                         
                     } catch (error) {
                         console.error('❌ Entra ID login failed:', error);
@@ -779,11 +805,18 @@
             
             updateUserInfo() {
                 console.log('👤 Updating user info...');
+                console.log('👤 Current user:', this.currentUser);
                 
                 const userNameElement = document.getElementById('user-name');
                 if (userNameElement && this.currentUser) {
-                    userNameElement.textContent = this.currentUser.name || this.currentUser.email || 'Bruker';
-                    console.log('✅ User info updated:', this.currentUser.name);
+                    const displayName = this.currentUser.name || this.currentUser.email || 'Bruker';
+                    userNameElement.textContent = displayName;
+                    console.log('✅ User info updated:', displayName);
+                } else {
+                    console.log('❌ User info not updated - missing element or user:', {
+                        userNameElement: !!userNameElement,
+                        currentUser: !!this.currentUser
+                    });
                 }
             }
             
@@ -1243,11 +1276,18 @@
                 const typeName = record.socio_typedeltagelse ? this.getTypeName(record.socio_typedeltagelse) : 'Ukjent type';
                 const dateStr = record.socio_deltagelse_fra ? new Date(record.socio_deltagelse_fra).toLocaleDateString('nb-NO') : 'Ukjent dato';
                 
+                console.log('📱 Showing bottom sheet for delete confirmation...');
+                
                 this.showBottomSheet(
                     'Slett registrering',
                     `Er du sikker på at du vil slette denne registreringen?\n\n${typeName} - ${dateStr}`,
-                    () => this.performDelete(record), // onConfirm
-                    () => console.log('❌ Delete cancelled by user') // onCancel
+                    () => {
+                        console.log('✅ Delete confirmed, calling performDelete...');
+                        this.performDelete(record);
+                    }, // onConfirm
+                    () => {
+                        console.log('❌ Delete cancelled by user');
+                    } // onCancel
                 );
             }
             
