@@ -104,13 +104,13 @@
                 <div class="form-group">
                     <label for="socio_fra_klokke" class="pkt-txt-16-bold">Fra klokke *</label>
                     <input type="time" id="socio_fra_klokke" name="socio_fra_klokke" class="pkt-input" required>
-                </div>
+            </div>
                 
                 <div class="form-group">
                     <label for="socio_til_klokke" class="pkt-txt-16-bold">Til klokke *</label>
                     <input type="time" id="socio_til_klokke" name="socio_til_klokke" class="pkt-input" required>
-                </div>
-                
+    </div>
+
                 <div class="form-group">
                     <label for="socio_varighet" class="pkt-txt-16-bold">Varighet (automatisk beregnet)</label>
                     <input type="text" id="socio_varighet" name="socio_varighet" class="pkt-input" readonly>
@@ -626,7 +626,16 @@
                     // Generate socio_id
                     const socio_id = `${attendanceData.socio_type}_${attendanceData.socio_dato}_${Date.now()}`;
                     
-                    // Prepare Dataverse payload
+                    // Calculate duration in hours as a number
+                    let durationHours = 0;
+                    if (attendanceData.socio_fra_klokke && attendanceData.socio_til_klokke) {
+                        const from = new Date(`2000-01-01T${attendanceData.socio_fra_klokke}`);
+                        const to = new Date(`2000-01-01T${attendanceData.socio_til_klokke}`);
+                        const diffMs = to - from;
+                        durationHours = diffMs / (1000 * 60 * 60);
+                    }
+                    
+                    // Prepare Dataverse payload with correct data types
                     const payload = {
                         'socio_id': socio_id,
                         'socio_dato': attendanceData.socio_dato,
@@ -634,9 +643,16 @@
                         'socio_til_klokke': attendanceData.socio_til_klokke,
                         'socio_type': attendanceData.socio_type,
                         'socio_status': 1, // Default to "Registrert" (value 1)
-                        'socio_beskrivelse': attendanceData.socio_beskrivelse,
-                        'socio_varighet': attendanceData.socio_varighet
+                        'socio_beskrivelse': attendanceData.socio_beskrivelse || null,
+                        'socio_varighet': durationHours
                     };
+                    
+                    // Remove null/empty values to avoid issues
+                    Object.keys(payload).forEach(key => {
+                        if (payload[key] === null || payload[key] === undefined || payload[key] === '') {
+                            delete payload[key];
+                        }
+                    });
                     
                     // Note: User reference will be set automatically by Dataverse based on the authenticated user
                     // In a real app, you might want to create a socio_bruker record first and reference it here
