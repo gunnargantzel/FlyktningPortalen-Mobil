@@ -32,11 +32,6 @@
                          document.head.appendChild(script);"></script>
 </head>
 <body>
-    <!-- Loading Screen -->
-    <div id="loading-screen" class="loading-screen pkt-section pkt-section--grey">
-        <div class="loading-spinner"></div>
-        <p class="pkt-txt-24-medium">Laster app...</p>
-    </div>
 
     <!-- Login Screen -->
     <div id="login-screen" class="screen hidden">
@@ -239,7 +234,7 @@
         class CleanApp {
             constructor() {
                 console.log('🚀 CleanApp constructor called');
-                this.currentScreen = 'loading-screen';
+                this.currentScreen = 'login-screen';
                 this.initialized = false;
                 this.msalInstance = null;
                 this.currentUser = null;
@@ -263,15 +258,9 @@
                 // Initialize Dataverse
                 await this.initializeDataverse();
                 
-                // Show login screen after 2 seconds
-                setTimeout(() => {
-                    console.log('⏰ Timeout reached, showing login screen...');
-                    // Only show login if we're still on loading screen
-                    const loadingScreen = document.getElementById('loading-screen');
-                    if (loadingScreen && !loadingScreen.classList.contains('hidden')) {
-                        this.showScreen('login-screen');
-                    }
-                }, 3000);
+                // Show login screen immediately
+                console.log('📱 Showing login screen immediately...');
+                this.showScreen('login-screen');
                 
                 // Set up event listeners
                 this.setupEventListeners();
@@ -376,33 +365,19 @@
             showScreen(screenId) {
                 console.log('📱 Showing screen:', screenId);
                 
-                // Hide all screens with multiple methods - include loading-screen class
-                document.querySelectorAll('.screen, .loading-screen').forEach(screen => {
+                // Hide all screens
+                document.querySelectorAll('.screen').forEach(screen => {
                     screen.classList.add('hidden');
                     screen.style.display = 'none';
-                    console.log('🔒 Hiding screen:', screen.id, 'classes:', screen.className);
                 });
                 
-                // Show target screen with multiple methods
+                // Show target screen
                 const targetScreen = document.getElementById(screenId);
                 if (targetScreen) {
                     targetScreen.classList.remove('hidden');
                     targetScreen.style.display = 'flex';
                     this.currentScreen = screenId;
                     console.log('✅ Screen shown:', screenId);
-                    console.log('Screen element:', targetScreen);
-                    console.log('Screen classes:', targetScreen.className);
-                    console.log('Screen style:', targetScreen.style.display);
-                    
-                    // Extra check: Make sure loading screen is definitely hidden
-                    if (screenId !== 'loading-screen') {
-                        const loadingScreen = document.getElementById('loading-screen');
-                        if (loadingScreen) {
-                            loadingScreen.classList.add('hidden');
-                            loadingScreen.style.display = 'none';
-                            console.log('🔒 Extra: Loading screen hidden');
-                        }
-                    }
                 } else {
                     console.error('❌ Screen not found:', screenId);
                 }
