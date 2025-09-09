@@ -74,6 +74,11 @@
                     <p class="pkt-txt-16">Se og rediger dine registreringer</p>
                     <button id="view-attendance-list-btn" class="pkt-btn pkt-btn--secondary">Åpne</button>
                 </div>
+                <div class="menu-card pkt-section pkt-section--white">
+                    <h3 class="pkt-txt-20-bold">Test Bottom Sheet</h3>
+                    <p class="pkt-txt-16">Test bekreftelse popup</p>
+                    <button id="test-bottom-sheet-btn" class="pkt-btn pkt-btn--secondary">Test</button>
+                </div>
             </div>
         </div>
     </div>
@@ -571,6 +576,26 @@
                     viewAttendanceListBtn.addEventListener('click', () => {
                         console.log('📋 View attendance list button clicked');
                         this.showAttendanceList();
+                    });
+                }
+                
+                // Test bottom sheet button
+                const testBottomSheetBtn = document.getElementById('test-bottom-sheet-btn');
+                if (testBottomSheetBtn) {
+                    testBottomSheetBtn.addEventListener('click', () => {
+                        console.log('🧪 Test bottom sheet button clicked');
+                        this.showBottomSheet(
+                            'Test Bekreftelse',
+                            'Dette er en test av bottom sheet funksjonaliteten. Vil du fortsette?',
+                            () => {
+                                console.log('✅ Test confirmed');
+                                alert('Test bekreftet!');
+                            },
+                            () => {
+                                console.log('❌ Test cancelled');
+                                alert('Test avbrutt!');
+                            }
+                        );
                     });
                 }
                 
@@ -1227,6 +1252,7 @@
             }
             
             async performDelete(record) {
+                console.log('🗑️ Performing delete for record:', record);
                 
                 try {
                     // Get access token
@@ -1239,7 +1265,11 @@
                     const accessToken = tokenResponse.accessToken;
                     
                     // Delete record
-                    const response = await fetch(this.dataverseConfig.baseUrl + `socio_deltakelses(${record.socio_deltakelseid})`, {
+                    const deleteUrl = this.dataverseConfig.baseUrl + `socio_deltakelses(${record.socio_deltakelseid})`;
+                    console.log('🔗 Delete URL:', deleteUrl);
+                    console.log('🆔 Record ID:', record.socio_deltakelseid);
+                    
+                    const response = await fetch(deleteUrl, {
                         method: 'DELETE',
                         headers: {
                             'Authorization': `Bearer ${accessToken}`,
@@ -1255,7 +1285,9 @@
                     } else {
                         const error = await response.text();
                         console.error('❌ Failed to delete attendance record:', response.status, error);
-                        alert(`Feil ved sletting: ${response.status}`);
+                        console.error('❌ Response headers:', response.headers);
+                        console.error('❌ Response status text:', response.statusText);
+                        alert(`Feil ved sletting: ${response.status} - ${response.statusText}`);
                     }
                     
                 } catch (error) {
