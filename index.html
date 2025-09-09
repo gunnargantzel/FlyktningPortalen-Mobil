@@ -266,9 +266,31 @@
                 // Set up event listeners
                 this.setupEventListeners();
                 
+                // Set default date to today
+                this.setDefaultDate();
+                
                 console.log('✅ CleanApp initialized successfully');
             }
             
+            setDefaultDate() {
+                console.log('📅 Setting default date to today...');
+                const today = new Date();
+                const todayString = today.toISOString().split('T')[0]; // Format: YYYY-MM-DD
+                
+                // Set default date for main form
+                const dateInput = document.getElementById('socio_dato');
+                if (dateInput) {
+                    dateInput.value = todayString;
+                    console.log('✅ Default date set for main form:', todayString);
+                }
+                
+                // Set default date for edit form
+                const editDateInput = document.getElementById('edit_socio_dato');
+                if (editDateInput) {
+                    editDateInput.value = todayString;
+                    console.log('✅ Default date set for edit form:', todayString);
+                }
+            }
             
             async initializeMSAL() {
                 console.log('🔐 Initializing MSAL...');
@@ -380,6 +402,11 @@
                     targetScreen.style.display = 'flex';
                     this.currentScreen = screenId;
                     console.log('✅ Screen shown:', screenId);
+                    
+                    // Set default date when showing attendance form
+                    if (screenId === 'attendance-form-screen') {
+                        this.setDefaultDate();
+                    }
                 } else {
                     console.error('❌ Screen not found:', screenId);
                 }
