@@ -832,12 +832,12 @@
                         durationHours = diffMs / (1000 * 60 * 60);
                     }
                     
-                    // Prepare Dataverse payload with correct field names
+                    // Prepare Dataverse payload with correct field names and option set values
                     const payload = {
                         'socio_deltagelse_fra': attendanceData.socio_dato + 'T' + attendanceData.socio_fra_klokke + ':00',
                         'socio_deltagelse_til': attendanceData.socio_dato + 'T' + attendanceData.socio_til_klokke + ':00',
                         'socio_beskrivelse': attendanceData.socio_beskrivelse || null,
-                        'socio_registeringstatus': 1, // Default to "Registrert" (value 1)
+                        'socio_registeringstatus': 624610000, // Default to "Registrert" (option set value)
                         'socio_typedeltagelse': attendanceData.socio_type,
                         'socio_varighet': durationHours
                     };
@@ -1063,18 +1063,18 @@
                 };
                 const typeName = typeNames[record.socio_typedeltagelse] || 'Ukjent';
                 
-                // Get status name
+                // Get status name using correct option set values
                 const statusNames = {
-                    1: 'Registrert',
-                    2: 'Godkjent',
-                    3: 'Avslått'
+                    624610000: 'Registrert',
+                    624610001: 'Godkjent',
+                    624610002: 'Avslått'
                 };
                 const statusName = statusNames[record.socio_registeringstatus] || 'Ukjent';
-                const statusClass = record.socio_registeringstatus === 2 ? 'status-approved' : 
-                                  record.socio_registeringstatus === 3 ? 'status-rejected' : 'status-registered';
+                const statusClass = record.socio_registeringstatus === 624610001 ? 'status-approved' : 
+                                  record.socio_registeringstatus === 624610002 ? 'status-rejected' : 'status-registered';
                 
                 // Check if record can be edited
-                const canEdit = record.socio_registeringstatus === 1; // Only "Registrert" can be edited
+                const canEdit = record.socio_registeringstatus === 624610000; // Only "Registrert" can be edited
                 
                 div.innerHTML = `
                     <div class="record-header">
@@ -1125,17 +1125,17 @@
                 document.getElementById('edit_socio_type').value = record.socio_typedeltagelse || '';
                 document.getElementById('edit_socio_beskrivelse').value = record.socio_beskrivelse || '';
                 
-                // Show status
+                // Show status using correct option set values
                 const statusNames = {
-                    1: 'Registrert',
-                    2: 'Godkjent', 
-                    3: 'Avslått'
+                    624610000: 'Registrert',
+                    624610001: 'Godkjent', 
+                    624610002: 'Avslått'
                 };
                 const statusName = statusNames[record.socio_registeringstatus] || 'Ukjent';
                 document.getElementById('edit_socio_status_display').textContent = statusName;
                 
                 // Check if can edit
-                const canEdit = record.socio_registeringstatus === 1;
+                const canEdit = record.socio_registeringstatus === 624610000;
                 const warningDiv = document.getElementById('edit-status-warning');
                 const form = document.getElementById('edit-attendance-form');
                 
