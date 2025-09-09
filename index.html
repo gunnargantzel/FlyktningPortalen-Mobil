@@ -573,12 +573,8 @@
                         payload['socio_varighet'] = attendanceData.socio_varighet;
                     }
                     
-                    // Add user reference if available
-                    if (this.currentUser && this.currentUser.account) {
-                        // For now, we'll use a placeholder user ID
-                        // In a real app, you'd get this from the user lookup
-                        payload['socio_bruker@odata.bind'] = `/socio_bruker(00000000-0000-0000-0000-000000000000)`;
-                    }
+                    // Note: User reference will be set automatically by Dataverse based on the authenticated user
+                    // In a real app, you might want to create a socio_bruker record first and reference it here
                     
                     console.log('📤 Sending to Dataverse:', payload);
                     
@@ -591,7 +587,7 @@
                     const tokenResponse = await this.msalInstance.acquireTokenSilent(tokenRequest);
                     
                     // Create attendance record
-                    const response = await fetch(this.dataverseConfig.baseUrl + 'socio_deltakelses', {
+                    const response = await fetch(this.dataverseConfig.baseUrl + 'socio_Deltakelses', {
                         method: 'POST',
                         headers: {
                             'Authorization': 'Bearer ' + tokenResponse.accessToken,
