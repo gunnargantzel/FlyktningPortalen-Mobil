@@ -1,40 +1,98 @@
-/* Reset and Base Styles */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
+/* Custom styles to complement Punkt CSS */
 
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #f3f2f1;
-    color: #323130;
-    line-height: 1.6;
     overflow-x: hidden;
 }
 
-/* Screen Management */
-.screen {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
+/* Punkt CSS overrides and enhancements */
+.oslologo {
+    margin-bottom: 20px;
+    max-width: 200px;
+    height: auto;
 }
 
-.screen.hidden {
-    display: none;
+/* Override Punkt section padding for our screens */
+.screen .pkt-section {
+    padding: 20px;
 }
 
-/* Loading Screen */
-.loading-screen {
+.screen-header .pkt-section {
+    padding: 15px 20px;
+    border-bottom: 1px solid #e1dfdd;
+}
+
+/* Menu cards layout */
+.menu-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    max-width: 1000px;
+    width: 100%;
+}
+
+.menu-card {
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.menu-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.menu-card h3 {
+    margin-bottom: 10px;
+}
+
+.menu-card p {
+    margin-bottom: 20px;
+    color: #605e5c;
+}
+
+/* Login container */
+.login-container {
+    max-width: 400px;
+    width: 100%;
+    text-align: center;
+}
+
+.login-header {
+    margin-bottom: 30px;
+}
+
+.login-content {
+    margin-top: 20px;
+}
+
+/* User info in header */
+.user-info {
     display: flex;
-    flex-direction: column;
-    justify-content: center;
     align-items: center;
-    min-height: 100vh;
-    background-color: #0078d4;
-    color: white;
+    gap: 15px;
 }
 
+/* Form enhancements */
+.form {
+    max-width: 600px;
+    width: 100%;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #e1dfdd;
+}
+
+/* Loading spinner */
 .loading-spinner {
     width: 50px;
     height: 50px;
@@ -50,25 +108,18 @@ body {
     100% { transform: rotate(360deg); }
 }
 
-/* Login Screen */
-.login-container {
-    max-width: 400px;
-    margin: 0 auto;
-    padding: 40px 20px;
-    text-align: center;
+/* Screen Management */
+.screen {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
-.login-header h1 {
-    font-size: 2.5rem;
-    margin-bottom: 10px;
-    color: #0078d4;
+.screen.hidden {
+    display: none;
 }
 
-.login-header p {
-    font-size: 1.2rem;
-    color: #605e5c;
-    margin-bottom: 40px;
-}
+/* Removed duplicate login styles - now using Punkt CSS */
 
 /* App Header */
 .app-header {

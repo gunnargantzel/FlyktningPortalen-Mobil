@@ -10,7 +10,10 @@
     <!-- PWA Manifest -->
     <link rel="manifest" href="manifest.json">
     
-    <!-- Styles -->
+    <!-- Punkt CSS Framework -->
+    <link href="https://punkt-cdn.oslo.kommune.no/latest/css/pkt.min.css" rel="stylesheet">
+    
+    <!-- Custom Styles -->
     <link rel="stylesheet" href="styles.css">
     
         <!-- MSAL Library - Use real MSAL from CDN with local fallback -->
@@ -30,20 +33,24 @@
 </head>
 <body>
     <!-- Loading Screen -->
-    <div id="loading-screen" class="loading-screen">
+    <div id="loading-screen" class="loading-screen pkt-section pkt-section--grey">
         <div class="loading-spinner"></div>
-        <p>Laster app...</p>
+        <p class="pkt-txt-24-medium">Laster app...</p>
     </div>
 
     <!-- Login Screen -->
     <div id="login-screen" class="screen hidden">
-        <div class="login-container">
+        <div class="login-container pkt-section pkt-section--white">
             <div class="login-header">
-                <h1>Fravær Registrering</h1>
-                <p>For flyktninger</p>
+                <img src="https://punkt-cdn.oslo.kommune.no/latest/logos/oslologo.svg" 
+                     alt="Oslo kommune logo" 
+                     class="oslologo" 
+                     height="80">
+                <h1 class="pkt-txt-36-bold">Fravær Registrering</h1>
+                <p class="pkt-txt-18">For flyktninger</p>
             </div>
             <div class="login-content">
-                <button id="login-btn" class="btn btn-primary">
+                <button id="login-btn" class="pkt-btn pkt-btn--primary pkt-btn--large">
                     <span class="icon">🔐</span>
                     Logg inn
                 </button>
@@ -53,29 +60,29 @@
 
     <!-- Main App Screen -->
     <div id="main-screen" class="screen hidden">
-        <div class="screen-header">
-            <h1>Fravær Registrering</h1>
+        <div class="screen-header pkt-section pkt-section--white">
+            <h1 class="pkt-txt-28-bold">Fravær Registrering</h1>
             <div class="user-info">
-                <span id="user-name">Bruker</span>
-                <button id="logout-btn" class="btn-logout">Logg ut</button>
+                <span id="user-name" class="pkt-txt-16">Bruker</span>
+                <button id="logout-btn" class="pkt-btn pkt-btn--secondary">Logg ut</button>
             </div>
         </div>
-        <div class="screen-content">
+        <div class="screen-content pkt-section pkt-section--grey">
             <div class="menu-cards">
-                <div class="menu-card">
-                    <h3>Registrer deltakelse</h3>
-                    <p>Meld fravær eller deltakelse</p>
-                    <button id="register-attendance-btn" class="btn btn-primary">Start</button>
+                <div class="menu-card pkt-section pkt-section--white">
+                    <h3 class="pkt-txt-20-bold">Registrer deltakelse</h3>
+                    <p class="pkt-txt-16">Meld fravær eller deltakelse</p>
+                    <button id="register-attendance-btn" class="pkt-btn pkt-btn--primary">Start</button>
                 </div>
-                <div class="menu-card">
-                    <h3>Se oversikt</h3>
-                    <p>Se din fraværsoversikt</p>
-                    <button class="btn btn-secondary">Åpne</button>
+                <div class="menu-card pkt-section pkt-section--white">
+                    <h3 class="pkt-txt-20-bold">Se oversikt</h3>
+                    <p class="pkt-txt-16">Se din fraværsoversikt</p>
+                    <button class="pkt-btn pkt-btn--secondary">Åpne</button>
                 </div>
-                <div class="menu-card">
-                    <h3>Test Dataverse</h3>
-                    <p>Test tilkobling til Dataverse</p>
-                    <button id="test-dataverse-btn" class="btn btn-info">Test</button>
+                <div class="menu-card pkt-section pkt-section--white">
+                    <h3 class="pkt-txt-20-bold">Test Dataverse</h3>
+                    <p class="pkt-txt-16">Test tilkobling til Dataverse</p>
+                    <button id="test-dataverse-btn" class="pkt-btn pkt-btn--tertiary">Test</button>
                 </div>
             </div>
         </div>
@@ -83,25 +90,25 @@
 
     <!-- Attendance Form Screen -->
     <div id="attendance-form-screen" class="screen hidden">
-        <div class="screen-header">
-            <button id="back-to-main-btn" class="btn-back">← Tilbake</button>
-            <h1>Registrer deltakelse</h1>
+        <div class="screen-header pkt-section pkt-section--white">
+            <button id="back-to-main-btn" class="pkt-btn pkt-btn--secondary">← Tilbake</button>
+            <h1 class="pkt-txt-28-bold">Registrer deltakelse</h1>
         </div>
-        <div class="screen-content">
-            <form id="attendance-form" class="form">
+        <div class="screen-content pkt-section pkt-section--grey">
+            <form id="attendance-form" class="form pkt-section pkt-section--white">
                 <div class="form-group">
-                    <label for="socio_deltakelse_fra">Fra dato *</label>
-                    <input type="date" id="socio_deltakelse_fra" name="socio_deltakelse_fra" required>
+                    <label for="socio_deltakelse_fra" class="pkt-txt-16-bold">Fra dato *</label>
+                    <input type="date" id="socio_deltakelse_fra" name="socio_deltakelse_fra" class="pkt-input" required>
                 </div>
                 
                 <div class="form-group">
-                    <label for="socio_deltakelse_til">Til dato *</label>
-                    <input type="date" id="socio_deltakelse_til" name="socio_deltakelse_til" required>
+                    <label for="socio_deltakelse_til" class="pkt-txt-16-bold">Til dato *</label>
+                    <input type="date" id="socio_deltakelse_til" name="socio_deltakelse_til" class="pkt-input" required>
                 </div>
                 
                 <div class="form-group">
-                    <label for="socio_type">Type *</label>
-                    <select id="socio_type" name="socio_type" required>
+                    <label for="socio_type" class="pkt-txt-16-bold">Type *</label>
+                    <select id="socio_type" name="socio_type" class="pkt-select" required>
                         <option value="">Velg type...</option>
                         <option value="1">Tilstede</option>
                         <option value="2">Fravær</option>
@@ -110,32 +117,34 @@
                         <option value="5">Syk</option>
                     </select>
                 </div>
-                
+
                 <div class="form-group">
-                    <label for="socio_status">Status *</label>
-                    <select id="socio_status" name="socio_status" required>
+                    <label for="socio_status" class="pkt-txt-16-bold">Status *</label>
+                    <select id="socio_status" name="socio_status" class="pkt-select" required>
                         <option value="1">Registrert</option>
                         <option value="2">Godkjent</option>
                         <option value="3">Avslått</option>
                     </select>
                 </div>
-                
+
                 <div class="form-group">
-                    <label for="socio_beskrivelse">Beskrivelse</label>
+                    <label for="socio_beskrivelse" class="pkt-txt-16-bold">Beskrivelse</label>
                     <textarea id="socio_beskrivelse" name="socio_beskrivelse" 
+                              class="pkt-textarea"
                               placeholder="Beskriv deltagelsen..." 
                               maxlength="1000" rows="3"></textarea>
                 </div>
-                
+
                 <div class="form-group">
-                    <label for="socio_varighet">Varighet (timer)</label>
+                    <label for="socio_varighet" class="pkt-txt-16-bold">Varighet (timer)</label>
                     <input type="number" id="socio_varighet" name="socio_varighet" 
+                           class="pkt-input"
                            min="0" max="24" step="0.5" placeholder="0">
                 </div>
                 
                 <div class="form-actions">
-                    <button type="button" id="cancel-form-btn" class="btn btn-secondary">Avbryt</button>
-                    <button type="submit" id="save-attendance-btn" class="btn btn-primary">Lagre</button>
+                    <button type="button" id="cancel-form-btn" class="pkt-btn pkt-btn--secondary">Avbryt</button>
+                    <button type="submit" id="save-attendance-btn" class="pkt-btn pkt-btn--primary">Lagre</button>
                 </div>
             </form>
         </div>
