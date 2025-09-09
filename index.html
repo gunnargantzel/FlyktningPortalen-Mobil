@@ -65,7 +65,7 @@
                 <div class="menu-card">
                     <h3>Registrer deltakelse</h3>
                     <p>Meld fravær eller deltakelse</p>
-                    <button class="btn btn-primary">Start</button>
+                    <button id="register-attendance-btn" class="btn btn-primary">Start</button>
                 </div>
                 <div class="menu-card">
                     <h3>Se oversikt</h3>
@@ -78,6 +78,66 @@
                     <button id="test-dataverse-btn" class="btn btn-info">Test</button>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- Attendance Form Screen -->
+    <div id="attendance-form-screen" class="screen hidden">
+        <div class="screen-header">
+            <button id="back-to-main-btn" class="btn-back">← Tilbake</button>
+            <h1>Registrer deltakelse</h1>
+        </div>
+        <div class="screen-content">
+            <form id="attendance-form" class="form">
+                <div class="form-group">
+                    <label for="socio_deltakelse_fra">Fra dato *</label>
+                    <input type="date" id="socio_deltakelse_fra" name="socio_deltakelse_fra" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="socio_deltakelse_til">Til dato *</label>
+                    <input type="date" id="socio_deltakelse_til" name="socio_deltakelse_til" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="socio_type">Type *</label>
+                    <select id="socio_type" name="socio_type" required>
+                        <option value="">Velg type...</option>
+                        <option value="1">Tilstede</option>
+                        <option value="2">Fravær</option>
+                        <option value="3">Deltakelse</option>
+                        <option value="4">Permisjon</option>
+                        <option value="5">Syk</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="socio_status">Status *</label>
+                    <select id="socio_status" name="socio_status" required>
+                        <option value="1">Registrert</option>
+                        <option value="2">Godkjent</option>
+                        <option value="3">Avslått</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="socio_beskrivelse">Beskrivelse</label>
+                    <textarea id="socio_beskrivelse" name="socio_beskrivelse" 
+                              placeholder="Beskriv deltagelsen..." 
+                              maxlength="1000" rows="3"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="socio_varighet">Varighet (timer)</label>
+                    <input type="number" id="socio_varighet" name="socio_varighet" 
+                           min="0" max="24" step="0.5" placeholder="0">
+                </div>
+                
+                <div class="form-actions">
+                    <button type="button" id="cancel-form-btn" class="btn btn-secondary">Avbryt</button>
+                    <button type="submit" id="save-attendance-btn" class="btn btn-primary">Lagre</button>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -280,6 +340,43 @@
                     });
                 }
                 
+                // Register attendance button
+                const registerAttendanceBtn = document.getElementById('register-attendance-btn');
+                if (registerAttendanceBtn) {
+                    registerAttendanceBtn.addEventListener('click', () => {
+                        console.log('📝 Register attendance button clicked');
+                        this.showScreen('attendance-form-screen');
+                    });
+                }
+                
+                // Back to main button
+                const backToMainBtn = document.getElementById('back-to-main-btn');
+                if (backToMainBtn) {
+                    backToMainBtn.addEventListener('click', () => {
+                        console.log('← Back to main button clicked');
+                        this.showScreen('main-screen');
+                    });
+                }
+                
+                // Cancel form button
+                const cancelFormBtn = document.getElementById('cancel-form-btn');
+                if (cancelFormBtn) {
+                    cancelFormBtn.addEventListener('click', () => {
+                        console.log('❌ Cancel form button clicked');
+                        this.showScreen('main-screen');
+                    });
+                }
+                
+                // Attendance form submit
+                const attendanceForm = document.getElementById('attendance-form');
+                if (attendanceForm) {
+                    attendanceForm.addEventListener('submit', async (e) => {
+                        e.preventDefault();
+                        console.log('💾 Attendance form submitted');
+                        await this.handleAttendanceSubmit();
+                    });
+                }
+                
                 console.log('✅ Event listeners set up');
             }
             
@@ -423,6 +520,93 @@
                 } else {
                     console.log('❌ Dataverse not configured');
                     return { success: false, message: 'Dataverse not configured' };
+                }
+            }
+            
+            async handleAttendanceSubmit() {
+                console.log('💾 Handling attendance form submission...');
+                
+                try {
+                    // Get form data
+                    const formData = new FormData(document.getElementById('attendance-form'));
+                    const attendanceData = {
+                        socio_deltakelse_fra: formData.get('socio_deltakelse_fra'),
+                        socio_deltakelse_til: formData.get('socio_deltakelse_til'),
+                        socio_type: parseInt(formData.get('socio_type')),
+                        socio_status: parseInt(formData.get('socio_status')),
+                        socio_beskrivelse: formData.get('socio_beskrivelse') || '',
+                        socio_varighet: parseFloat(formData.get('socio_varighet')) || null
+                    };
+                    
+                    console.log('📝 Attendance data:', attendanceData);
+                    
+                    // Validate required fields
+                    if (!attendanceData.socio_deltakelse_fra || !attendanceData.socio_deltakelse_til || !attendanceData.socio_type) {
+                        alert('Vennligst fyll ut alle påkrevde felt.');
+                        return;
+                    }
+                    
+                    // Generate socio_id
+                    const socio_id = `${attendanceData.socio_type}_${attendanceData.socio_deltakelse_fra}_${Date.now()}`;
+                    
+                    // Prepare Dataverse payload
+                    const payload = {
+                        'socio_id': socio_id,
+                        'socio_deltakelse_fra': attendanceData.socio_deltakelse_fra,
+                        'socio_deltakelse_til': attendanceData.socio_deltakelse_til,
+                        'socio_type': attendanceData.socio_type,
+                        'socio_status': attendanceData.socio_status,
+                        'socio_beskrivelse': attendanceData.socio_beskrivelse
+                    };
+                    
+                    // Add varighet if provided
+                    if (attendanceData.socio_varighet !== null) {
+                        payload['socio_varighet'] = attendanceData.socio_varighet;
+                    }
+                    
+                    // Add user reference if available
+                    if (this.currentUser && this.currentUser.account) {
+                        // For now, we'll use a placeholder user ID
+                        // In a real app, you'd get this from the user lookup
+                        payload['socio_bruker@odata.bind'] = `/socio_bruker(00000000-0000-0000-0000-000000000000)`;
+                    }
+                    
+                    console.log('📤 Sending to Dataverse:', payload);
+                    
+                    // Get access token
+                    const tokenRequest = {
+                        scopes: ['https://smittevaksine2022utvikling.crm4.dynamics.com/.default'],
+                        account: this.currentUser?.account
+                    };
+                    
+                    const tokenResponse = await this.msalInstance.acquireTokenSilent(tokenRequest);
+                    
+                    // Create attendance record
+                    const response = await fetch(this.dataverseConfig.baseUrl + 'socio_deltakelses', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': 'Bearer ' + tokenResponse.accessToken,
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify(payload)
+                    });
+                    
+                    if (response.ok) {
+                        const result = await response.json();
+                        console.log('✅ Attendance created successfully:', result);
+                        alert('Deltagelse registrert!');
+                        this.showScreen('main-screen');
+                        document.getElementById('attendance-form').reset();
+                    } else {
+                        const error = await response.text();
+                        console.error('❌ Failed to create attendance:', response.status, error);
+                        alert(`Feil ved registrering: ${response.status}`);
+                    }
+                    
+                } catch (error) {
+                    console.error('❌ Attendance submission error:', error);
+                    alert('En feil oppstod ved registrering. Prøv igjen.');
                 }
             }
         }

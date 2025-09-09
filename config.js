@@ -19,9 +19,8 @@ const CONFIG = {
         environmentId: '43a8a53e-4c71-e32a-b1f1-4b37a215c056',
         apiVersion: '9.2',
         entities: {
-            user: 'new_bruker',
-            participation: 'new_deltakelse',
-            absence: 'new_fravær'
+            user: 'socio_bruker',
+            attendance: 'socio_deltakelse'
         }
     },
 
@@ -71,21 +70,94 @@ const CONFIG = {
     endpoints: {
         dataverse: {
             base: 'https://smittevaksine2022utvikling.crm4.dynamics.com/api/data/v9.2/',
-            user: 'new_bruker',
-            participation: 'new_deltakelse',
-            absence: 'new_fravær'
+            user: 'socio_bruker',
+            attendance: 'socio_deltakelse'
         }
     },
 
     // Validation Rules
     validation: {
-        absenceDescription: {
+        attendanceDescription: {
             maxLength: 1000,
             required: false
         },
-        absenceTypes: ['Syk', 'Permisjon', 'Annet'],
-        participationStatuses: ['Registrert', 'Bekreftet'],
-        absenceStatuses: ['Registrert', 'Godkjent', 'Avvist']
+        attendanceTypes: ['Tilstede', 'Fravær', 'Deltakelse', 'Permisjon', 'Syk'],
+        attendanceStatuses: ['Registrert', 'Godkjent', 'Avslått']
+    },
+
+    // Form Schemas
+    schemas: {
+        attendance: {
+            fields: [
+                {
+                    name: 'socio_id',
+                    type: 'text',
+                    label: 'ID',
+                    required: true,
+                    placeholder: 'Automatisk generert'
+                },
+                {
+                    name: 'socio_bruker',
+                    type: 'lookup',
+                    label: 'Bruker',
+                    required: true,
+                    entity: 'socio_bruker'
+                },
+                {
+                    name: 'socio_deltakelse_fra',
+                    type: 'date',
+                    label: 'Fra dato',
+                    required: true
+                },
+                {
+                    name: 'socio_deltakelse_til',
+                    type: 'date',
+                    label: 'Til dato',
+                    required: true
+                },
+                {
+                    name: 'socio_type',
+                    type: 'optionset',
+                    label: 'Type',
+                    required: true,
+                    options: [
+                        { value: 1, label: 'Tilstede' },
+                        { value: 2, label: 'Fravær' },
+                        { value: 3, label: 'Deltakelse' },
+                        { value: 4, label: 'Permisjon' },
+                        { value: 5, label: 'Syk' }
+                    ]
+                },
+                {
+                    name: 'socio_status',
+                    type: 'optionset',
+                    label: 'Status',
+                    required: true,
+                    options: [
+                        { value: 1, label: 'Registrert' },
+                        { value: 2, label: 'Godkjent' },
+                        { value: 3, label: 'Avslått' }
+                    ]
+                },
+                {
+                    name: 'socio_beskrivelse',
+                    type: 'textarea',
+                    label: 'Beskrivelse',
+                    required: false,
+                    placeholder: 'Beskriv deltagelsen...',
+                    maxLength: 1000
+                },
+                {
+                    name: 'socio_varighet',
+                    type: 'number',
+                    label: 'Varighet (timer)',
+                    required: false,
+                    min: 0,
+                    max: 24,
+                    step: 0.5
+                }
+            ]
+        }
     },
 
     // Error Messages (Norwegian)
@@ -98,8 +170,9 @@ const CONFIG = {
             unknownError: 'En ukjent feil oppstod. Prøv igjen senere.'
         },
         success: {
-            participationRegistered: 'Deltakelse registrert!',
-            absenceRegistered: 'Fravær registrert!',
+            attendanceRegistered: 'Deltagelse registrert!',
+            attendanceUpdated: 'Deltagelse oppdatert!',
+            attendanceDeleted: 'Deltagelse slettet!',
             loginSuccess: 'Innlogging vellykket!',
             logoutSuccess: 'Utlogging vellykket!'
         },
