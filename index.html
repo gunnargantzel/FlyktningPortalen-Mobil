@@ -68,7 +68,7 @@
                     <h3 class="pkt-txt-20-bold">Registrer deltakelse</h3>
                     <p class="pkt-txt-16">Meld fravær eller deltakelse</p>
                     <button id="register-attendance-btn" class="pkt-btn pkt-btn--primary">Start</button>
-                </div>
+                    </div>
                 <div class="menu-card pkt-section pkt-section--white">
                     <h3 class="pkt-txt-20-bold">Mine registreringer</h3>
                     <p class="pkt-txt-16">Se og rediger dine registreringer</p>
@@ -80,36 +80,36 @@
                     <button id="test-bottom-sheet-btn" class="pkt-btn pkt-btn--secondary">Test</button>
                 </div>
             </div>
-        </div>
-    </div>
+                    </div>
+                </div>
 
     <!-- Attendance Form Screen -->
     <div id="attendance-form-screen" class="screen hidden">
         <div class="screen-header pkt-section pkt-section--white">
             <button id="back-to-main-btn" class="pkt-btn pkt-btn--secondary">← Tilbake</button>
             <h1 class="pkt-txt-28-bold">Registrer deltakelse</h1>
-        </div>
+                    </div>
         <div class="screen-content pkt-section pkt-section--grey">
             <form id="attendance-form" class="form pkt-section pkt-section--white">
                 <div class="form-group">
                     <label for="socio_dato" class="pkt-txt-16-bold">Dato *</label>
                     <input type="date" id="socio_dato" name="socio_dato" class="pkt-input" required>
-                </div>
+                    </div>
                 
                 <div class="form-group">
                     <label for="socio_fra_klokke" class="pkt-txt-16-bold">Fra klokke *</label>
                     <input type="time" id="socio_fra_klokke" name="socio_fra_klokke" class="pkt-input" required>
-            </div>
-                
+                </div>
+
                 <div class="form-group">
                     <label for="socio_til_klokke" class="pkt-txt-16-bold">Til klokke *</label>
                     <input type="time" id="socio_til_klokke" name="socio_til_klokke" class="pkt-input" required>
-    </div>
+                    </div>
 
                 <div class="form-group">
                     <label for="socio_varighet" class="pkt-txt-16-bold">Varighet (automatisk beregnet)</label>
                     <input type="text" id="socio_varighet" name="socio_varighet" class="pkt-input" readonly>
-                </div>
+                    </div>
                 
                 <div class="form-group">
                     <label for="socio_type" class="pkt-txt-16-bold">Type *</label>
@@ -129,7 +129,7 @@
                               class="pkt-textarea"
                               placeholder="Beskriv deltagelsen..." 
                               maxlength="1000" rows="3"></textarea>
-                </div>
+            </div>
 
                 
                 <div class="form-actions">
@@ -177,21 +177,21 @@
                     <label for="edit_socio_dato" class="pkt-txt-16-bold">Dato *</label>
                     <input type="date" id="edit_socio_dato" name="socio_dato" class="pkt-input" required>
                 </div>
-                
+
                 <div class="form-group">
                     <label for="edit_socio_fra_klokke" class="pkt-txt-16-bold">Fra klokke *</label>
                     <input type="time" id="edit_socio_fra_klokke" name="socio_fra_klokke" class="pkt-input" required>
                 </div>
-                
+
                 <div class="form-group">
                     <label for="edit_socio_til_klokke" class="pkt-txt-16-bold">Til klokke *</label>
                     <input type="time" id="edit_socio_til_klokke" name="socio_til_klokke" class="pkt-input" required>
-                </div>
+            </div>
 
                 <div class="form-group">
                     <label for="edit_socio_varighet" class="pkt-txt-16-bold">Varighet (automatisk beregnet)</label>
                     <input type="text" id="edit_socio_varighet" name="socio_varighet" class="pkt-input" readonly>
-                </div>
+        </div>
                 
                 <div class="form-group">
                     <label for="edit_socio_type" class="pkt-txt-16-bold">Type *</label>
@@ -203,7 +203,7 @@
                         <option value="624610003">Permisjon</option>
                         <option value="624610004">Syk</option>
                     </select>
-                </div>
+    </div>
 
                 <div class="form-group">
                     <label for="edit_socio_beskrivelse" class="pkt-txt-16-bold">Beskrivelse</label>
@@ -211,7 +211,7 @@
                               class="pkt-textarea"
                               placeholder="Beskriv deltagelsen..." 
                               maxlength="1000" rows="3"></textarea>
-                </div>
+        </div>
 
                 <div class="form-group">
                     <label class="pkt-txt-16-bold">Status</label>
@@ -223,8 +223,8 @@
                     <button type="submit" id="update-attendance-btn" class="pkt-btn pkt-btn--primary" disabled>Oppdater</button>
                 </div>
             </form>
+            </div>
         </div>
-    </div>
 
 
     <!-- Simple App Script -->
@@ -259,15 +259,20 @@
                 // Initialize Dataverse
                 await this.initializeDataverse();
                 
-                // Show login screen immediately
-                console.log('📱 Showing login screen immediately...');
-                this.showScreen('login-screen');
-                
                 // Set up event listeners
                 this.setupEventListeners();
                 
                 // Set default date to today
                 this.setDefaultDate();
+                
+                // Check if user is already authenticated
+                if (this.isAuthenticated()) {
+                    console.log('✅ User already authenticated, showing main screen');
+                    this.showScreen('main-screen');
+                } else {
+                    console.log('📱 User not authenticated, showing login screen');
+                    this.showScreen('login-screen');
+                }
                 
                 console.log('✅ CleanApp initialized successfully');
             }
@@ -290,6 +295,21 @@
                     editDateInput.value = todayString;
                     console.log('✅ Default date set for edit form:', todayString);
                 }
+            }
+            
+            isAuthenticated() {
+                // Check if user is properly authenticated
+                const hasUser = this.currentUser && this.currentUser.name;
+                const hasMSALAccount = this.msalInstance && this.msalInstance.getAllAccounts().length > 0;
+                
+                console.log('🔐 Authentication check:', {
+                    hasUser,
+                    hasMSALAccount,
+                    currentUser: this.currentUser,
+                    msalInstance: !!this.msalInstance
+                });
+                
+                return hasUser || hasMSALAccount;
             }
             
             async initializeMSAL() {
@@ -389,6 +409,14 @@
             showScreen(screenId) {
                 console.log('📱 Showing screen:', screenId);
                 
+                // Security check: prevent access to protected screens without authentication
+                const protectedScreens = ['main-screen', 'attendance-form-screen', 'attendance-list-screen', 'edit-attendance-screen'];
+                if (protectedScreens.includes(screenId) && !this.isAuthenticated()) {
+                    console.log('🚫 Access denied to protected screen without authentication:', screenId);
+                    this.showScreen('login-screen');
+                    return;
+                }
+                
                 // Hide all screens
                 document.querySelectorAll('.screen').forEach(screen => {
                     screen.classList.add('hidden');
@@ -439,6 +467,11 @@
                 if (registerAttendanceBtn) {
                     registerAttendanceBtn.addEventListener('click', () => {
                         console.log('📝 Register attendance button clicked');
+                        if (!this.isAuthenticated()) {
+                            console.log('🚫 Access denied - not authenticated');
+                            this.showScreen('login-screen');
+                            return;
+                        }
                         this.showScreen('attendance-form-screen');
                     });
                 }
@@ -549,6 +582,11 @@
                 if (viewAttendanceListBtn) {
                     viewAttendanceListBtn.addEventListener('click', () => {
                         console.log('📋 View attendance list button clicked');
+                        if (!this.isAuthenticated()) {
+                            console.log('🚫 Access denied - not authenticated');
+                            this.showScreen('login-screen');
+                            return;
+                        }
                         this.showAttendanceList();
                     });
                 }
@@ -707,6 +745,7 @@
                             prompt: 'select_account'
                         };
                         
+                        console.log('🔄 Starting MSAL login popup...');
                         const response = await this.msalInstance.loginPopup(loginRequest);
                         console.log('✅ Entra ID login successful:', response);
                         
@@ -719,18 +758,22 @@
                         // Update user info immediately after login
                         this.updateUserInfo();
                         
+                        // Show main screen only after successful authentication
+                        this.showScreen('main-screen');
+                        
                     } catch (error) {
                         console.error('❌ Entra ID login failed:', error);
                         console.log('Falling back to mock authentication');
                         this.currentUser = { name: 'Test User', email: 'test@example.com' };
+                        this.updateUserInfo();
+                        this.showScreen('main-screen');
                     }
                 } else {
                     console.log('Using mock authentication...');
                     this.currentUser = { name: 'Test User', email: 'test@example.com' };
+                    this.updateUserInfo();
+                    this.showScreen('main-screen');
                 }
-                
-                this.showScreen('main-screen');
-                this.updateUserInfo();
             }
             
             async handleLogout() {
@@ -1117,7 +1160,7 @@
                     <div class="record-header">
                         <h4 class="pkt-txt-18-bold">${typeName} - ${dateStr}</h4>
                         <span class="status-badge ${statusClass} pkt-txt-14">${statusName}</span>
-                    </div>
+    </div>
                     <div class="record-details pkt-txt-16">
                         <p><strong>Tid:</strong> ${fromTimeStr} - ${toTimeStr}</p>
                         <p><strong>Varighet:</strong> ${record.socio_varighet ? record.socio_varighet.toFixed(1) + ' timer' : 'Ukjent'}</p>
