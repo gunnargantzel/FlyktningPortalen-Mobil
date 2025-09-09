@@ -74,11 +74,6 @@
                     <p class="pkt-txt-16">Se og rediger dine registreringer</p>
                     <button id="view-attendance-list-btn" class="pkt-btn pkt-btn--secondary">Åpne</button>
                 </div>
-                <div class="menu-card pkt-section pkt-section--white">
-                    <h3 class="pkt-txt-20-bold">Test Dataverse</h3>
-                    <p class="pkt-txt-16">Test tilkobling til Dataverse</p>
-                    <button id="test-dataverse-btn" class="pkt-btn pkt-btn--tertiary">Test</button>
-                </div>
             </div>
         </div>
     </div>
@@ -404,16 +399,6 @@
                     });
                 }
                 
-                // Test Dataverse button
-                const testDataverseBtn = document.getElementById('test-dataverse-btn');
-                if (testDataverseBtn) {
-                    testDataverseBtn.addEventListener('click', async () => {
-                        console.log('🔗 Test Dataverse button clicked');
-                        const result = await this.testDataverseConnection();
-                        console.log('Dataverse test result:', result);
-                        alert(`Dataverse test: ${result.success ? 'Success' : 'Failed'} - ${result.message}`);
-                    });
-                }
                 
                 // Register attendance button
                 const registerAttendanceBtn = document.getElementById('register-attendance-btn');
@@ -1079,18 +1064,29 @@
                         ${record.socio_beskrivelse ? `<p><strong>Beskrivelse:</strong> ${record.socio_beskrivelse}</p>` : ''}
                     </div>
                     <div class="record-actions">
-                        ${canEdit ? 
-                            `<button class="edit-record-btn pkt-btn pkt-btn--secondary" data-record-id="${record.socio_deltakelseid}">Rediger</button>` :
-                            `<span class="pkt-txt-14" style="color: #666;">Kan ikke redigeres (${statusName})</span>`
-                        }
+                        <div class="action-buttons">
+                            ${canEdit ? 
+                                `<button class="edit-record-btn pkt-btn pkt-btn--secondary" data-record-id="${record.socio_deltakelseid}">Rediger</button>` :
+                                `<span class="pkt-txt-14" style="color: #666;">Kan ikke redigeres (${statusName})</span>`
+                            }
+                            ${canEdit ? 
+                                `<button class="delete-record-btn pkt-btn pkt-btn--danger" data-record-id="${record.socio_deltakelseid}">Slett</button>` :
+                                ''
+                            }
+                        </div>
                     </div>
                 `;
                 
-                // Add edit button event listener
+                // Add edit and delete button event listeners
                 if (canEdit) {
                     const editBtn = div.querySelector('.edit-record-btn');
                     editBtn.addEventListener('click', () => {
                         this.editAttendanceRecord(record);
+                    });
+                    
+                    const deleteBtn = div.querySelector('.delete-record-btn');
+                    deleteBtn.addEventListener('click', () => {
+                        this.deleteAttendanceRecord(record);
                     });
                 }
                 
@@ -1158,6 +1154,64 @@
                 }
                 
                 this.showScreen('edit-attendance-screen');
+            }
+            
+            async deleteAttendanceRecord(record) {
+                console.log('🗑️ Deleting attendance record:', record);
+                
+                // Show confirmation dialog
+                const confirmMessage = `Er du sikker på at du vil slette denne registreringen?\n\n${record.socio_typedeltagelse ? this.getTypeName(record.socio_typedeltagelse) : 'Ukjent type'} - ${record.socio_deltagelse_fra ? new Date(record.socio_deltagelse_fra).toLocaleDateString('nb-NO') : 'Ukjent dato'}`;
+                
+                if (!confirm(confirmMessage)) {
+                    console.log('❌ Delete cancelled by user');
+                    return;
+                }
+                
+                try {
+                    // Get access token
+                    const tokenRequest = {
+                        scopes: ['https://flyktningportalenutvikling.crm4.dynamics.com/.default'],
+                        account: this.currentUser?.account
+                    };
+                    
+                    const tokenResponse = await this.msalInstance.acquireTokenSilent(tokenRequest);
+                    const accessToken = tokenResponse.accessToken;
+                    
+                    // Delete record
+                    const response = await fetch(this.dataverseConfig.baseUrl + `socio_deltakelses(${record.socio_deltakelseid})`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Authorization': `Bearer ${accessToken}`,
+                            'Accept': 'application/json'
+                        }
+                    });
+                    
+                    if (response.ok) {
+                        console.log('✅ Attendance record deleted successfully');
+                        alert('Registrering slettet!');
+                        // Refresh the list
+                        this.showAttendanceList();
+                    } else {
+                        const error = await response.text();
+                        console.error('❌ Failed to delete attendance record:', response.status, error);
+                        alert(`Feil ved sletting: ${response.status}`);
+                    }
+                    
+                } catch (error) {
+                    console.error('❌ Attendance deletion error:', error);
+                    alert('En feil oppstod ved sletting. Prøv igjen.');
+                }
+            }
+            
+            getTypeName(typeValue) {
+                const typeNames = {
+                    624610000: 'Tilstede',
+                    624610001: 'Fravær', 
+                    624610002: 'Deltakelse',
+                    624610003: 'Permisjon',
+                    624610004: 'Syk'
+                };
+                return typeNames[typeValue] || 'Ukjent';
             }
             
             async getEntityMetadata(entityName) {
