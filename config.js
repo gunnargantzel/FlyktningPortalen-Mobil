@@ -104,15 +104,21 @@ const CONFIG = {
                     entity: 'socio_bruker'
                 },
                 {
-                    name: 'socio_deltakelse_fra',
+                    name: 'socio_dato',
                     type: 'date',
-                    label: 'Fra dato',
+                    label: 'Dato',
                     required: true
                 },
                 {
-                    name: 'socio_deltakelse_til',
-                    type: 'date',
-                    label: 'Til dato',
+                    name: 'socio_fra_klokke',
+                    type: 'time',
+                    label: 'Fra klokke',
+                    required: true
+                },
+                {
+                    name: 'socio_til_klokke',
+                    type: 'time',
+                    label: 'Til klokke',
                     required: true
                 },
                 {
@@ -132,7 +138,8 @@ const CONFIG = {
                     name: 'socio_status',
                     type: 'optionset',
                     label: 'Status',
-                    required: true,
+                    required: false,
+                    defaultValue: 1,
                     options: [
                         { value: 1, label: 'Registrert' },
                         { value: 2, label: 'Godkjent' },
@@ -149,12 +156,10 @@ const CONFIG = {
                 },
                 {
                     name: 'socio_varighet',
-                    type: 'number',
-                    label: 'Varighet (timer)',
+                    type: 'text',
+                    label: 'Varighet (automatisk beregnet)',
                     required: false,
-                    min: 0,
-                    max: 24,
-                    step: 0.5
+                    readonly: true
                 }
             ]
         }

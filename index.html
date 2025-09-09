@@ -97,13 +97,23 @@
         <div class="screen-content pkt-section pkt-section--grey">
             <form id="attendance-form" class="form pkt-section pkt-section--white">
                 <div class="form-group">
-                    <label for="socio_deltakelse_fra" class="pkt-txt-16-bold">Fra dato *</label>
-                    <input type="date" id="socio_deltakelse_fra" name="socio_deltakelse_fra" class="pkt-input" required>
+                    <label for="socio_dato" class="pkt-txt-16-bold">Dato *</label>
+                    <input type="date" id="socio_dato" name="socio_dato" class="pkt-input" required>
                 </div>
                 
                 <div class="form-group">
-                    <label for="socio_deltakelse_til" class="pkt-txt-16-bold">Til dato *</label>
-                    <input type="date" id="socio_deltakelse_til" name="socio_deltakelse_til" class="pkt-input" required>
+                    <label for="socio_fra_klokke" class="pkt-txt-16-bold">Fra klokke *</label>
+                    <input type="time" id="socio_fra_klokke" name="socio_fra_klokke" class="pkt-input" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="socio_til_klokke" class="pkt-txt-16-bold">Til klokke *</label>
+                    <input type="time" id="socio_til_klokke" name="socio_til_klokke" class="pkt-input" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="socio_varighet" class="pkt-txt-16-bold">Varighet (automatisk beregnet)</label>
+                    <input type="text" id="socio_varighet" name="socio_varighet" class="pkt-input" readonly>
                 </div>
                 
                 <div class="form-group">
@@ -115,15 +125,6 @@
                         <option value="3">Deltakelse</option>
                         <option value="4">Permisjon</option>
                         <option value="5">Syk</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label for="socio_status" class="pkt-txt-16-bold">Status *</label>
-                    <select id="socio_status" name="socio_status" class="pkt-select" required>
-                        <option value="1">Registrert</option>
-                        <option value="2">Godkjent</option>
-                        <option value="3">Avslått</option>
                     </select>
                 </div>
 
@@ -386,6 +387,36 @@
                     });
                 }
                 
+                // Auto-calculate duration when time inputs change
+                const fromTimeInput = document.getElementById('socio_fra_klokke');
+                const toTimeInput = document.getElementById('socio_til_klokke');
+                const durationInput = document.getElementById('socio_varighet');
+                
+                if (fromTimeInput && toTimeInput && durationInput) {
+                    const calculateDuration = () => {
+                        const fromTime = fromTimeInput.value;
+                        const toTime = toTimeInput.value;
+                        
+                        if (fromTime && toTime) {
+                            const from = new Date(`2000-01-01T${fromTime}`);
+                            const to = new Date(`2000-01-01T${toTime}`);
+                            const diffMs = to - from;
+                            
+                            if (diffMs > 0) {
+                                const diffHours = diffMs / (1000 * 60 * 60);
+                                durationInput.value = `${diffHours.toFixed(1)} timer`;
+                            } else {
+                                durationInput.value = 'Ugyldig tidsperiode';
+                            }
+                        } else {
+                            durationInput.value = '';
+                        }
+                    };
+                    
+                    fromTimeInput.addEventListener('change', calculateDuration);
+                    toTimeInput.addEventListener('change', calculateDuration);
+                }
+                
                 console.log('✅ Event listeners set up');
             }
             
@@ -539,39 +570,36 @@
                     // Get form data
                     const formData = new FormData(document.getElementById('attendance-form'));
                     const attendanceData = {
-                        socio_deltakelse_fra: formData.get('socio_deltakelse_fra'),
-                        socio_deltakelse_til: formData.get('socio_deltakelse_til'),
+                        socio_dato: formData.get('socio_dato'),
+                        socio_fra_klokke: formData.get('socio_fra_klokke'),
+                        socio_til_klokke: formData.get('socio_til_klokke'),
                         socio_type: parseInt(formData.get('socio_type')),
-                        socio_status: parseInt(formData.get('socio_status')),
                         socio_beskrivelse: formData.get('socio_beskrivelse') || '',
-                        socio_varighet: parseFloat(formData.get('socio_varighet')) || null
+                        socio_varighet: formData.get('socio_varighet') || ''
                     };
                     
                     console.log('📝 Attendance data:', attendanceData);
                     
                     // Validate required fields
-                    if (!attendanceData.socio_deltakelse_fra || !attendanceData.socio_deltakelse_til || !attendanceData.socio_type) {
+                    if (!attendanceData.socio_dato || !attendanceData.socio_fra_klokke || !attendanceData.socio_til_klokke || !attendanceData.socio_type) {
                         alert('Vennligst fyll ut alle påkrevde felt.');
                         return;
                     }
                     
                     // Generate socio_id
-                    const socio_id = `${attendanceData.socio_type}_${attendanceData.socio_deltakelse_fra}_${Date.now()}`;
+                    const socio_id = `${attendanceData.socio_type}_${attendanceData.socio_dato}_${Date.now()}`;
                     
                     // Prepare Dataverse payload
                     const payload = {
                         'socio_id': socio_id,
-                        'socio_deltakelse_fra': attendanceData.socio_deltakelse_fra,
-                        'socio_deltakelse_til': attendanceData.socio_deltakelse_til,
+                        'socio_dato': attendanceData.socio_dato,
+                        'socio_fra_klokke': attendanceData.socio_fra_klokke,
+                        'socio_til_klokke': attendanceData.socio_til_klokke,
                         'socio_type': attendanceData.socio_type,
-                        'socio_status': attendanceData.socio_status,
-                        'socio_beskrivelse': attendanceData.socio_beskrivelse
+                        'socio_status': 1, // Default to "Registrert" (value 1)
+                        'socio_beskrivelse': attendanceData.socio_beskrivelse,
+                        'socio_varighet': attendanceData.socio_varighet
                     };
-                    
-                    // Add varighet if provided
-                    if (attendanceData.socio_varighet !== null) {
-                        payload['socio_varighet'] = attendanceData.socio_varighet;
-                    }
                     
                     // Note: User reference will be set automatically by Dataverse based on the authenticated user
                     // In a real app, you might want to create a socio_bruker record first and reference it here
