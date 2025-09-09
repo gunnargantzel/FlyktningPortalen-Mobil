@@ -639,7 +639,14 @@
                     editFromTimeInput.addEventListener('change', calculateEditDuration);
                     editToTimeInput.addEventListener('change', calculateEditDuration);
                     
-                    requiredFields.forEach(field => {
+                    const editRequiredFields = [
+                        document.getElementById('edit_socio_dato'),
+                        document.getElementById('edit_socio_fra_klokke'),
+                        document.getElementById('edit_socio_til_klokke'),
+                        document.getElementById('edit_socio_type')
+                    ];
+                    
+                    editRequiredFields.forEach(field => {
                         if (field) {
                             field.addEventListener('change', validateEditForm);
                             field.addEventListener('input', validateEditForm);
