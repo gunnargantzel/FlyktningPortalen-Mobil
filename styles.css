@@ -92,6 +92,14 @@ body {
     border-top: 1px solid #e1dfdd;
 }
 
+/* Disabled button state */
+.pkt-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background-color: #e1dfdd !important;
+    color: #605e5c !important;
+}
+
 /* Loading spinner */
 .loading-spinner {
     width: 50px;
