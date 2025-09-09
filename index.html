@@ -303,9 +303,9 @@
                             return;
                         }
                         
-                        // Login with popup
+                        // Login with popup - use Dataverse scope
                         const loginRequest = {
-                            scopes: ['User.Read'],
+                            scopes: ['https://smittevaksine2022utvikling.crm4.dynamics.com/.default'],
                             prompt: 'select_account'
                         };
                         
@@ -365,12 +365,21 @@
                 if (this.dataverseConfig && this.dataverseConfig.mockMode) {
                     console.log('✅ Dataverse connection test successful (mock mode)');
                     return { success: true, message: 'Mock connection successful' };
-                } else if (this.dataverseConfig) {
+                } else if (this.dataverseConfig && this.msalInstance) {
                     try {
+                        // Get access token for Dataverse
+                        const tokenRequest = {
+                            scopes: ['https://smittevaksine2022utvikling.crm4.dynamics.com/.default'],
+                            account: this.currentUser?.account
+                        };
+                        
+                        const tokenResponse = await this.msalInstance.acquireTokenSilent(tokenRequest);
+                        console.log('✅ Access token acquired for Dataverse');
+                        
                         // Test real Dataverse connection
                         const response = await fetch(this.dataverseConfig.baseUrl + 'WhoAmI()', {
                             headers: {
-                                'Authorization': 'Bearer ' + (this.currentUser?.account?.accessToken || 'mock-token'),
+                                'Authorization': 'Bearer ' + tokenResponse.accessToken,
                                 'Accept': 'application/json'
                             }
                         });
@@ -384,6 +393,31 @@
                         }
                     } catch (error) {
                         console.error('❌ Dataverse connection test error:', error);
+                        
+                        // If token acquisition failed, try interactive login
+                        if (error.name === 'InteractionRequiredAuthError') {
+                            console.log('🔄 Token expired, trying interactive login...');
+                            try {
+                                const tokenResponse = await this.msalInstance.acquireTokenPopup(tokenRequest);
+                                console.log('✅ New access token acquired via popup');
+                                
+                                // Retry Dataverse connection
+                                const response = await fetch(this.dataverseConfig.baseUrl + 'WhoAmI()', {
+                                    headers: {
+                                        'Authorization': 'Bearer ' + tokenResponse.accessToken,
+                                        'Accept': 'application/json'
+                                    }
+                                });
+                                
+                                if (response.ok) {
+                                    console.log('✅ Dataverse connection test successful after re-authentication');
+                                    return { success: true, message: 'Real Dataverse connection successful' };
+                                }
+                            } catch (popupError) {
+                                console.error('❌ Interactive token acquisition failed:', popupError);
+                            }
+                        }
+                        
                         return { success: false, message: 'Connection error: ' + error.message };
                     }
                 } else {
