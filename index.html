@@ -75,7 +75,7 @@
                     <button id="view-attendance-list-btn" class="pkt-btn pkt-btn--secondary">Åpne</button>
                 </div>
                 <div class="menu-card pkt-section pkt-section--white">
-                    <h3 class="pkt-txt-20-bold">Test Bottom Sheet</h3>
+                    <h3 class="pkt-txt-20-bold">Test Popup</h3>
                     <p class="pkt-txt-16">Test bekreftelse popup</p>
                     <button id="test-bottom-sheet-btn" class="pkt-btn pkt-btn--secondary">Test</button>
                 </div>
@@ -226,21 +226,6 @@
         </div>
     </div>
 
-    <!-- Bottom Sheet for Mobile Dialogs -->
-    <div id="bottom-sheet" class="bottom-sheet hidden">
-        <div class="bottom-sheet-backdrop"></div>
-        <div class="bottom-sheet-content">
-            <div class="bottom-sheet-handle"></div>
-            <div class="bottom-sheet-body">
-                <h3 id="bottom-sheet-title" class="bottom-sheet-title"></h3>
-                <p id="bottom-sheet-message" class="bottom-sheet-message"></p>
-                <div class="bottom-sheet-actions">
-                    <button id="bottom-sheet-cancel" class="pkt-btn pkt-btn--secondary">Avbryt</button>
-                    <button id="bottom-sheet-confirm" class="pkt-btn pkt-btn--primary">Bekreft</button>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <!-- Simple App Script -->
     <script>
@@ -284,66 +269,6 @@
                 console.log('✅ CleanApp initialized successfully');
             }
             
-            // Bottom Sheet functionality
-            showBottomSheet(title, message, onConfirm, onCancel) {
-                console.log('📱 showBottomSheet called with:', { title, message, onConfirm: !!onConfirm, onCancel: !!onCancel });
-                
-                const bottomSheet = document.getElementById('bottom-sheet');
-                const titleEl = document.getElementById('bottom-sheet-title');
-                const messageEl = document.getElementById('bottom-sheet-message');
-                const confirmBtn = document.getElementById('bottom-sheet-confirm');
-                const cancelBtn = document.getElementById('bottom-sheet-cancel');
-                
-                if (!bottomSheet || !titleEl || !messageEl || !confirmBtn || !cancelBtn) {
-                    console.error('❌ Bottom sheet elements not found:', {
-                        bottomSheet: !!bottomSheet,
-                        titleEl: !!titleEl,
-                        messageEl: !!messageEl,
-                        confirmBtn: !!confirmBtn,
-                        cancelBtn: !!cancelBtn
-                    });
-                    return;
-                }
-                
-                titleEl.textContent = title;
-                messageEl.textContent = message;
-                
-                // Remove existing event listeners
-                const newConfirmBtn = confirmBtn.cloneNode(true);
-                const newCancelBtn = cancelBtn.cloneNode(true);
-                confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
-                cancelBtn.parentNode.replaceChild(newCancelBtn, cancelBtn);
-                
-                // Add new event listeners
-                newConfirmBtn.addEventListener('click', () => {
-                    console.log('✅ Bottom sheet confirm button clicked');
-                    this.hideBottomSheet();
-                    if (onConfirm) {
-                        console.log('🔄 Calling onConfirm callback...');
-                        onConfirm();
-                    }
-                });
-                
-                newCancelBtn.addEventListener('click', () => {
-                    console.log('❌ Bottom sheet cancel button clicked');
-                    this.hideBottomSheet();
-                    if (onCancel) {
-                        console.log('🔄 Calling onCancel callback...');
-                        onCancel();
-                    }
-                });
-                
-                // Show bottom sheet
-                bottomSheet.classList.remove('hidden');
-                document.body.style.overflow = 'hidden'; // Prevent background scrolling
-                console.log('✅ Bottom sheet shown');
-            }
-            
-            hideBottomSheet() {
-                const bottomSheet = document.getElementById('bottom-sheet');
-                bottomSheet.classList.add('hidden');
-                document.body.style.overflow = ''; // Restore scrolling
-            }
             
             async initializeMSAL() {
                 console.log('🔐 Initializing MSAL...');
@@ -601,23 +526,18 @@
                     });
                 }
                 
-                // Test bottom sheet button
+                // Test popup button
                 const testBottomSheetBtn = document.getElementById('test-bottom-sheet-btn');
                 if (testBottomSheetBtn) {
                     testBottomSheetBtn.addEventListener('click', () => {
-                        console.log('🧪 Test bottom sheet button clicked');
-                        this.showBottomSheet(
-                            'Test Bekreftelse',
-                            'Dette er en test av bottom sheet funksjonaliteten. Vil du fortsette?',
-                            () => {
-                                console.log('✅ Test confirmed');
-                                alert('Test bekreftet!');
-                            },
-                            () => {
-                                console.log('❌ Test cancelled');
-                                alert('Test avbrutt!');
-                            }
-                        );
+                        console.log('🧪 Test popup button clicked');
+                        if (confirm('Dette er en test av popup funksjonaliteten. Vil du fortsette?')) {
+                            console.log('✅ Test confirmed');
+                            alert('Test bekreftet!');
+                        } else {
+                            console.log('❌ Test cancelled');
+                            alert('Test avbrutt!');
+                        }
                     });
                 }
                 
@@ -1272,23 +1192,19 @@
             async deleteAttendanceRecord(record) {
                 console.log('🗑️ Deleting attendance record:', record);
                 
-                // Show confirmation bottom sheet
+                // Show confirmation popup
                 const typeName = record.socio_typedeltagelse ? this.getTypeName(record.socio_typedeltagelse) : 'Ukjent type';
                 const dateStr = record.socio_deltagelse_fra ? new Date(record.socio_deltagelse_fra).toLocaleDateString('nb-NO') : 'Ukjent dato';
                 
-                console.log('📱 Showing bottom sheet for delete confirmation...');
+                const confirmMessage = `Er du sikker på at du vil slette denne registreringen?\n\n${typeName} - ${dateStr}`;
+                console.log('📱 Showing confirmation popup...');
                 
-                this.showBottomSheet(
-                    'Slett registrering',
-                    `Er du sikker på at du vil slette denne registreringen?\n\n${typeName} - ${dateStr}`,
-                    () => {
-                        console.log('✅ Delete confirmed, calling performDelete...');
-                        this.performDelete(record);
-                    }, // onConfirm
-                    () => {
-                        console.log('❌ Delete cancelled by user');
-                    } // onCancel
-                );
+                if (confirm(confirmMessage)) {
+                    console.log('✅ Delete confirmed, calling performDelete...');
+                    await this.performDelete(record);
+                } else {
+                    console.log('❌ Delete cancelled by user');
+                }
             }
             
             async performDelete(record) {
