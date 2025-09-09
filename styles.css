@@ -1,7 +1,67 @@
 /* Custom styles to complement Punkt CSS */
 
+/* CSS Custom Properties for Mobile-First Design */
+:root {
+    /* Spacing scale: 4/5/6 (4px, 5px, 6px base units) */
+    --space-1: 4px;
+    --space-2: 8px;
+    --space-3: 12px;
+    --space-4: 16px;
+    --space-5: 20px;
+    --space-6: 24px;
+    --space-8: 32px;
+    --space-10: 40px;
+    --space-12: 48px;
+    --space-16: 64px;
+    --space-20: 80px;
+    
+    /* Typography scale: 12/16/20 */
+    --text-xs: 12px;
+    --text-sm: 14px;
+    --text-base: 16px;
+    --text-lg: 18px;
+    --text-xl: 20px;
+    --text-2xl: 24px;
+    --text-3xl: 30px;
+    --text-4xl: 36px;
+    
+    /* Mobile-first breakpoints */
+    --mobile: 320px;
+    --tablet: 768px;
+    --desktop: 1024px;
+    
+    /* iOS safe areas */
+    --safe-area-top: env(safe-area-inset-top, 0px);
+    --safe-area-bottom: env(safe-area-inset-bottom, 0px);
+    --safe-area-left: env(safe-area-inset-left, 0px);
+    --safe-area-right: env(safe-area-inset-right, 0px);
+}
+
 body {
     overflow-x: hidden;
+    /* iOS safe area support */
+    padding-top: var(--safe-area-top);
+    padding-bottom: var(--safe-area-bottom);
+    padding-left: var(--safe-area-left);
+    padding-right: var(--safe-area-right);
+    
+    /* Remove tap highlights on iOS */
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+/* Allow text selection in input fields */
+input, textarea, [contenteditable] {
+    -webkit-user-select: text;
+    -khtml-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
+    user-select: text;
 }
 
 /* Punkt CSS overrides and enhancements */
@@ -11,35 +71,78 @@ body {
     height: auto;
 }
 
-/* Override Punkt section padding for our screens */
+/* Override Punkt section padding for our screens - Mobile-first */
 .screen .pkt-section {
-    padding: 20px;
+    padding: var(--space-4);
 }
 
 .screen-header .pkt-section {
-    padding: 15px 20px;
+    padding: var(--space-3) var(--space-4);
     border-bottom: 1px solid #e1dfdd;
 }
 
-/* Menu cards layout */
+/* Mobile-first responsive padding */
+@media (min-width: 768px) {
+    .screen .pkt-section {
+        padding: var(--space-6);
+    }
+    
+    .screen-header .pkt-section {
+        padding: var(--space-4) var(--space-6);
+    }
+}
+
+/* Menu cards layout - Mobile-first */
 .menu-cards {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 20px;
-    max-width: 1000px;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
     width: 100%;
 }
 
 .menu-card {
-    padding: 20px;
+    padding: var(--space-5);
     border-radius: 8px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
+/* Tablet and desktop */
+@media (min-width: 768px) {
+    .menu-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: var(--space-5);
+        max-width: 1000px;
+    }
+    
+    .menu-card {
+        padding: var(--space-6);
+    }
+}
+
+/* Smooth 60fps transitions */
+.menu-card {
+    will-change: transform, box-shadow;
+}
+
 .menu-card:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    .menu-card,
+    .menu-card:hover,
+    .attendance-record,
+    .attendance-record:hover,
+    .pkt-btn,
+    * {
+        transition: none !important;
+        animation: none !important;
+        transform: none !important;
+    }
 }
 
 .menu-card h3 {
@@ -897,5 +1000,124 @@ textarea.form-control {
     .loading-message,
     .no-data-message {
         color: #a19f9d;
+    }
+}
+
+/* Bottom Sheet for Mobile Dialogs */
+.bottom-sheet {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+}
+
+.bottom-sheet.hidden {
+    display: none;
+}
+
+.bottom-sheet-backdrop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    animation: fadeIn 0.3s ease;
+}
+
+.bottom-sheet-content {
+    position: relative;
+    background: white;
+    border-radius: 16px 16px 0 0;
+    width: 100%;
+    max-width: 500px;
+    max-height: 80vh;
+    transform: translateY(100%);
+    animation: slideUp 0.3s ease forwards;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.bottom-sheet-handle {
+    width: 40px;
+    height: 4px;
+    background-color: #e1dfdd;
+    border-radius: 2px;
+    margin: var(--space-3) auto;
+}
+
+.bottom-sheet-body {
+    padding: var(--space-4) var(--space-5) var(--space-6);
+}
+
+.bottom-sheet-title {
+    font-size: var(--text-xl);
+    font-weight: 600;
+    margin-bottom: var(--space-3);
+    color: #323130;
+}
+
+.bottom-sheet-message {
+    font-size: var(--text-base);
+    color: #605e5c;
+    margin-bottom: var(--space-6);
+    line-height: 1.5;
+}
+
+.bottom-sheet-actions {
+    display: flex;
+    gap: var(--space-3);
+    justify-content: flex-end;
+}
+
+.bottom-sheet-actions .pkt-btn {
+    flex: 1;
+    max-width: 120px;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideUp {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+}
+
+/* Desktop: Use modal instead of bottom sheet */
+@media (min-width: 768px) {
+    .bottom-sheet {
+        align-items: center;
+    }
+    
+    .bottom-sheet-content {
+        border-radius: 12px;
+        max-width: 400px;
+        transform: scale(0.9);
+        animation: scaleIn 0.3s ease forwards;
+    }
+    
+    @keyframes scaleIn {
+        from { transform: scale(0.9); opacity: 0; }
+        to { transform: scale(1); opacity: 1; }
+    }
+}
+
+/* Reduced motion support for bottom sheet */
+@media (prefers-reduced-motion: reduce) {
+    .bottom-sheet-backdrop,
+    .bottom-sheet-content {
+        animation: none !important;
+    }
+    
+    .bottom-sheet-content {
+        transform: none !important;
     }
 }

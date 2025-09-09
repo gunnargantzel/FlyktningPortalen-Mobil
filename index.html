@@ -221,6 +221,22 @@
         </div>
     </div>
 
+    <!-- Bottom Sheet for Mobile Dialogs -->
+    <div id="bottom-sheet" class="bottom-sheet hidden">
+        <div class="bottom-sheet-backdrop"></div>
+        <div class="bottom-sheet-content">
+            <div class="bottom-sheet-handle"></div>
+            <div class="bottom-sheet-body">
+                <h3 id="bottom-sheet-title" class="bottom-sheet-title"></h3>
+                <p id="bottom-sheet-message" class="bottom-sheet-message"></p>
+                <div class="bottom-sheet-actions">
+                    <button id="bottom-sheet-cancel" class="pkt-btn pkt-btn--secondary">Avbryt</button>
+                    <button id="bottom-sheet-confirm" class="pkt-btn pkt-btn--primary">Bekreft</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Simple App Script -->
     <script>
         console.log('=== CLEAN APP STARTING ===');
@@ -261,6 +277,45 @@
                 this.setupEventListeners();
                 
                 console.log('✅ CleanApp initialized successfully');
+            }
+            
+            // Bottom Sheet functionality
+            showBottomSheet(title, message, onConfirm, onCancel) {
+                const bottomSheet = document.getElementById('bottom-sheet');
+                const titleEl = document.getElementById('bottom-sheet-title');
+                const messageEl = document.getElementById('bottom-sheet-message');
+                const confirmBtn = document.getElementById('bottom-sheet-confirm');
+                const cancelBtn = document.getElementById('bottom-sheet-cancel');
+                
+                titleEl.textContent = title;
+                messageEl.textContent = message;
+                
+                // Remove existing event listeners
+                const newConfirmBtn = confirmBtn.cloneNode(true);
+                const newCancelBtn = cancelBtn.cloneNode(true);
+                confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
+                cancelBtn.parentNode.replaceChild(newCancelBtn, cancelBtn);
+                
+                // Add new event listeners
+                newConfirmBtn.addEventListener('click', () => {
+                    this.hideBottomSheet();
+                    if (onConfirm) onConfirm();
+                });
+                
+                newCancelBtn.addEventListener('click', () => {
+                    this.hideBottomSheet();
+                    if (onCancel) onCancel();
+                });
+                
+                // Show bottom sheet
+                bottomSheet.classList.remove('hidden');
+                document.body.style.overflow = 'hidden'; // Prevent background scrolling
+            }
+            
+            hideBottomSheet() {
+                const bottomSheet = document.getElementById('bottom-sheet');
+                bottomSheet.classList.add('hidden');
+                document.body.style.overflow = ''; // Restore scrolling
             }
             
             async initializeMSAL() {
@@ -1159,13 +1214,19 @@
             async deleteAttendanceRecord(record) {
                 console.log('🗑️ Deleting attendance record:', record);
                 
-                // Show confirmation dialog
-                const confirmMessage = `Er du sikker på at du vil slette denne registreringen?\n\n${record.socio_typedeltagelse ? this.getTypeName(record.socio_typedeltagelse) : 'Ukjent type'} - ${record.socio_deltagelse_fra ? new Date(record.socio_deltagelse_fra).toLocaleDateString('nb-NO') : 'Ukjent dato'}`;
+                // Show confirmation bottom sheet
+                const typeName = record.socio_typedeltagelse ? this.getTypeName(record.socio_typedeltagelse) : 'Ukjent type';
+                const dateStr = record.socio_deltagelse_fra ? new Date(record.socio_deltagelse_fra).toLocaleDateString('nb-NO') : 'Ukjent dato';
                 
-                if (!confirm(confirmMessage)) {
-                    console.log('❌ Delete cancelled by user');
-                    return;
-                }
+                this.showBottomSheet(
+                    'Slett registrering',
+                    `Er du sikker på at du vil slette denne registreringen?\n\n${typeName} - ${dateStr}`,
+                    () => this.performDelete(record), // onConfirm
+                    () => console.log('❌ Delete cancelled by user') // onCancel
+                );
+            }
+            
+            async performDelete(record) {
                 
                 try {
                     // Get access token
