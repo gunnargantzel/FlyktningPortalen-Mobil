@@ -74,11 +74,6 @@
                     <p class="pkt-txt-16">Se og rediger dine registreringer</p>
                     <button id="view-attendance-list-btn" class="pkt-btn pkt-btn--secondary">Åpne</button>
                 </div>
-                <div class="menu-card pkt-section pkt-section--white">
-                    <h3 class="pkt-txt-20-bold">Test Popup</h3>
-                    <p class="pkt-txt-16">Test bekreftelse popup</p>
-                    <button id="test-bottom-sheet-btn" class="pkt-btn pkt-btn--secondary">Test</button>
-                </div>
             </div>
                     </div>
                 </div>
@@ -609,20 +604,6 @@
                     });
                 }
                 
-                // Test popup button
-                const testBottomSheetBtn = document.getElementById('test-bottom-sheet-btn');
-                if (testBottomSheetBtn) {
-                    testBottomSheetBtn.addEventListener('click', () => {
-                        console.log('🧪 Test popup button clicked');
-                        if (confirm('Dette er en test av popup funksjonaliteten. Vil du fortsette?')) {
-                            console.log('✅ Test confirmed');
-                            alert('Test bekreftet!');
-                        } else {
-                            console.log('❌ Test cancelled');
-                            alert('Test avbrutt!');
-                        }
-                    });
-                }
                 
                 // Back to main from list button
                 const backToMainFromListBtn = document.getElementById('back-to-main-from-list-btn');
