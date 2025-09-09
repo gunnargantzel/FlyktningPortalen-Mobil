@@ -577,6 +577,7 @@
                     // In a real app, you might want to create a socio_bruker record first and reference it here
                     
                     console.log('📤 Sending to Dataverse:', payload);
+                    console.log('🔗 Dataverse URL:', this.dataverseConfig.baseUrl + 'socio_deltakelses');
                     
                     // Get access token
                     const tokenRequest = {
@@ -585,9 +586,25 @@
                     };
                     
                     const tokenResponse = await this.msalInstance.acquireTokenSilent(tokenRequest);
+                    console.log('🔑 Access token acquired');
+                    
+                    // First, let's test if the entity exists by trying to get metadata
+                    console.log('🔍 Testing entity existence...');
+                    const metadataResponse = await fetch(this.dataverseConfig.baseUrl + '$metadata#EntityDefinitions', {
+                        headers: {
+                            'Authorization': 'Bearer ' + tokenResponse.accessToken,
+                            'Accept': 'application/json'
+                        }
+                    });
+                    
+                    if (metadataResponse.ok) {
+                        console.log('✅ Metadata accessible');
+                    } else {
+                        console.log('❌ Metadata not accessible:', metadataResponse.status);
+                    }
                     
                     // Create attendance record
-                    const response = await fetch(this.dataverseConfig.baseUrl + 'socio_Deltakelses', {
+                    const response = await fetch(this.dataverseConfig.baseUrl + 'socio_deltakelses', {
                         method: 'POST',
                         headers: {
                             'Authorization': 'Bearer ' + tokenResponse.accessToken,

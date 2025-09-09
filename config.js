@@ -20,7 +20,7 @@ const CONFIG = {
         apiVersion: '9.2',
         entities: {
             user: 'socio_bruker',
-            attendance: 'socio_Deltakelse'
+            attendance: 'socio_deltakelse'
         }
     },
 
@@ -71,7 +71,7 @@ const CONFIG = {
         dataverse: {
             base: 'https://smittevaksine2022utvikling.crm4.dynamics.com/api/data/v9.2/',
             user: 'socio_bruker',
-            attendance: 'socio_Deltakelse'
+            attendance: 'socio_deltakelse'
         }
     },
 
